@@ -28,6 +28,7 @@ namespace RectSlayer
         {
             Brush brush = new SolidBrush(CurrentColor);
             g.FillRectangle(brush, LeftTopPoint.X, LeftTopPoint.Y, Width, Height);
+            //TODO: Draw the number of hits remaining
             brush.Dispose();
         }
     }

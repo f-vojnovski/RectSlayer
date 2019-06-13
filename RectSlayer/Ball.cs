@@ -14,9 +14,14 @@ namespace RectSlayer
         public static readonly int RADIUS = 10;
 
         public static readonly float VELOCITY = 15;
+
         public float VelocityX { get; set; }
+
         public float VelocityY { get; set; }
+
         public Color CurrentColor { get; set; }
+
+        public bool IsDead { get; private set; }
 
         public Ball(Point center, float velocityX, float velocityY, Color color)
         {
@@ -24,6 +29,7 @@ namespace RectSlayer
             this.VelocityX = velocityX;
             this.VelocityY = velocityY;
             this.CurrentColor = color;
+            this.IsDead = false;
         }
 
         public void Draw(Graphics g)
@@ -43,10 +49,24 @@ namespace RectSlayer
                 VelocityX *= -1;
             }
 
+            /*
             if (y - RADIUS <= top || y + RADIUS >= top + height)
             {
                 VelocityY *= -1;
             }
+            */
+
+            if(y - RADIUS <= top)
+            {
+                VelocityY *= -1;
+            }
+            
+
+            if(y + RADIUS >= top + height)
+            {
+                IsDead = true;
+            }
+
 
             int newX = (int)(Center.X + VelocityX);
             int newY = (int)(Center.Y + VelocityY);

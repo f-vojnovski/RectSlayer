@@ -15,6 +15,7 @@ namespace RectSlayer
         public Form1()
         {
             InitializeComponent();
+            this.DoubleBuffered = true;
         }
     }
 }

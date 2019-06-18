@@ -63,5 +63,25 @@ namespace RectSlayer
 
         // TODO: Add other necessary methods
 
+        public void Draw(Graphics g)
+        {
+            Brush brush = new SolidBrush(Color.Purple);
+            g.FillRectangle(brush, Position.X,Position.Y, 30, 30);
+        }
+        public void DrawLine(Graphics g, Point mouseLocation)
+        {
+            if (!CanShoot)
+            {
+                return;
+            }
+            if (mouseLocation == Point.Empty)
+            {
+                return;
+            }
+            Pen pen = new Pen(Color.White, 2);
+            pen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
+            g.DrawLine(pen, Position, mouseLocation);
+            pen.Dispose();
+        }
     }
 }

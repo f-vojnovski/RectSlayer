@@ -88,39 +88,52 @@ namespace RectSlayer
             float testX = cx;
             float testY = cy;
 
-            // TODO: Implement a way to know which side is hit
+            bool changeHorizontalVelocity = false;
+            bool changeVerticalVelocity = false;
+
 
             if (cx < rx)
             {
-                // TODO: The ball hit the rect from left
-                // TODO: Multiply X vel by -1
-                testX = rx;         // left edge
+
+                testX = rx;        
+                changeHorizontalVelocity = true;
             }
             else if (cx > rx + rw)
             {
-                // TODO: The ball hit the rect from right
-                // TODO: Multiply X vel by -1
-                testX = rx + rw;     // right edge
+
+                testX = rx + rw;     
+                changeHorizontalVelocity = true;
             }
 
             if (cy < ry)
             {
-                // TODO: The ball hit the rect from above
-                // TODO: Multiply Y vel by -1   
-                testY = ry;         // top edge
+  
+                testY = ry;
+                changeVerticalVelocity = true;
+
             }
             else if (cy > ry + rh)
             {
-                // TODO: The ball hit the rect from below
-                // TODO: Multiply Y vel by -1   
-                testY = ry + rh;     // bottom edge
+ 
+                testY = ry + rh;
+                changeVerticalVelocity = true;
+
             }
             float distX = cx - testX;
             float distY = cy - testY;
             float distance = (float)Math.Sqrt((distX * distX) + (distY * distY));
 
-            if (distance <= RADIUS)
+            if (distance <= RADIUS + 1)
             {
+                if (changeVerticalVelocity)
+                {
+                    VelocityY *= -1;
+                }
+                else if (changeHorizontalVelocity)
+                {
+                    VelocityX *= -1;
+                } 
+
                 return true;
             }
             return false;

@@ -20,14 +20,12 @@ namespace RectSlayer
         private int height;
         Point mouseLocation;
 
-        private Graphics graphics;
         public Form1()
         {
             InitializeComponent();
             this.DoubleBuffered = true;
             SetupVariables();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            graphics = this.CreateGraphics();
         }
         private void SetupVariables()
         {
@@ -35,7 +33,7 @@ namespace RectSlayer
             topY = 100;
             width = this.Width - 40;
             height = this.Height - (int)(2 * topY);
-            Manager = new GameManager(leftX, topY, width, height);
+            Manager = new GameManager(leftX, topY, width, height, shootTimer);
             gameLoopTimer.Start();
         }
 
@@ -58,6 +56,16 @@ namespace RectSlayer
         private void Form1_MouseMove(object sender, MouseEventArgs e)
         {
             mouseLocation = e.Location;
+        }
+
+        private void Form1_MouseClick(object sender, MouseEventArgs e)
+        {
+            Manager.StartShooting(e.Location);
+        }
+
+        private void ShootTimer_Tick(object sender, EventArgs e)
+        {
+            Manager.ShootBall();
         }
     }
 }

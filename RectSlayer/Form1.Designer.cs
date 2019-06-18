@@ -30,12 +30,18 @@
         {
             this.components = new System.ComponentModel.Container();
             this.gameLoopTimer = new System.Windows.Forms.Timer(this.components);
+            this.shootTimer = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // gameLoopTimer
             // 
             this.gameLoopTimer.Interval = 30;
             this.gameLoopTimer.Tick += new System.EventHandler(this.GameLoopTimer_Tick);
+            // 
+            // shootTimer
+            // 
+            this.shootTimer.Interval = 150;
+            this.shootTimer.Tick += new System.EventHandler(this.ShootTimer_Tick);
             // 
             // Form1
             // 
@@ -45,6 +51,7 @@
             this.Name = "Form1";
             this.Text = "Form1";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
+            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseClick);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseMove);
             this.ResumeLayout(false);
 
@@ -53,6 +60,7 @@
         #endregion
 
         private System.Windows.Forms.Timer gameLoopTimer;
+        private System.Windows.Forms.Timer shootTimer;
     }
 }
 

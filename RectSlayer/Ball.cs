@@ -13,7 +13,7 @@ namespace RectSlayer
 
         public static readonly int RADIUS = 10;
 
-        public static readonly float VELOCITY = 15;
+        public static readonly float VELOCITY = 5;
 
         public float VelocityX { get; set; }
 
@@ -23,6 +23,8 @@ namespace RectSlayer
 
         public bool IsDead { get; private set; }
 
+        float xPos, yPos;
+
         public Ball(Point center, float velocityX, float velocityY, Color color)
         {
             this.Center = center;
@@ -30,6 +32,8 @@ namespace RectSlayer
             this.VelocityY = velocityY;
             this.CurrentColor = color;
             this.IsDead = false;
+            xPos = Center.X;
+            yPos = Center.Y;
         }
 
         public void Draw(Graphics g)
@@ -41,8 +45,8 @@ namespace RectSlayer
 
         public void Move(int left, int top, int width, int height)
         {
-            float x = Center.X + VelocityX;
-            float y = Center.Y + VelocityY;
+            float x = xPos + VelocityX;
+            float y = yPos + VelocityY;
 
             if(x - RADIUS <= left || x + RADIUS >= left + width)
             {
@@ -67,17 +71,18 @@ namespace RectSlayer
                 IsDead = true;
             }
 
-
-            int newX = (int)(Center.X + VelocityX);
-            int newY = (int)(Center.Y + VelocityY);
+            xPos = xPos + VelocityX;
+            yPos = yPos + VelocityY;
+            int newX = (int)Math.Round((xPos));
+            int newY = (int)Math.Round((yPos));
 
             Center = new Point(newX, newY);
         }
 
         public bool CheckCollision(Rectangle rectangle)
         {
-            float cx = Center.X;
-            float cy = Center.Y;
+            float cx = xPos;
+            float cy = yPos;
 
             float rx = rectangle.LeftTopPoint.X;
             float ry = rectangle.LeftTopPoint.Y;
@@ -132,7 +137,9 @@ namespace RectSlayer
                 else if (changeHorizontalVelocity)
                 {
                     VelocityX *= -1;
-                } 
+                }
+
+                rectangle.HitsRemaining--;
 
                 return true;
             }

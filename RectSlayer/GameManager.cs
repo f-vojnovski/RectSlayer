@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace RectSlayer
 {
@@ -24,13 +25,20 @@ namespace RectSlayer
 
         private static readonly int objectsToGenerate = 6;
 
-        public GameManager(int left, int top, int width, int height)
+        private Timer shootTimer;
+        bool canStartLevel;
+        bool canStartLevelIndicator;
+
+        public GameManager(int left, int top, int width, int height, Timer shootTimer)
         {
             this.left = left;
             this.top = top;
             this.width = width;
             this.height = height;
+            this.shootTimer = shootTimer;
             rectWidth = width / 6 - 5;
+            canStartLevel = false;
+            canStartLevelIndicator = false;
             StartGame();
         }
 
@@ -40,10 +48,8 @@ namespace RectSlayer
             Player = new Shooter(new Point(left + width / 2, top + height - 20));
             Balls = new List<Ball>();
             Rectangles = new List<Rectangle>();
-            Balls.Add(new Ball(new Point(250, 250), -5, -5, Color.Red));
             GenerateRectangles();
-
-
+            Player.CanShoot = true;
         }
 
         public void GameOver()
@@ -58,10 +64,8 @@ namespace RectSlayer
 
                 foreach (Rectangle rect in Rectangles)
                 {
-                    if (ball.CheckCollision(rect)) {
-                        Console.WriteLine("PRAVOAGOLNIK USPESNO DEMOLIRAN");
+                    if(ball.CheckCollision(rect))
                         break;
-                    }
                 }
 
                 ball.Move(left, top, width, height);
@@ -74,6 +78,43 @@ namespace RectSlayer
                 {
                     Balls.RemoveAt(i);
                 }
+            }
+            for (int i = Rectangles.Count - 1; i >= 0; i--)
+            {
+                if (Rectangles.ElementAt(i).HitsRemaining == 0)
+                {
+                    Rectangles.RemoveAt(i);
+                }
+            }
+            if (Balls.Count == 0)
+            {
+                if(canStartLevelIndicator)
+                {
+                    canStartLevel = true;
+                    canStartLevelIndicator = false;
+                }
+                IncreaseLevel();
+                Player.CanShoot = true;
+            }
+        }
+
+        private void IncreaseLevel()
+        {
+            if (!canStartLevel) return;
+            canStartLevel = false;
+            ++Level;
+            MoveRectangles();
+            GenerateRectangles();
+
+            //if()
+            canStartLevel = false;
+        }
+
+        private void MoveRectangles()
+        {
+            foreach(Rectangle rect in Rectangles)
+            {
+                rect.LeftTopPoint = new Point(rect.LeftTopPoint.X, rect.LeftTopPoint.Y + rectHeight+3);
             }
         }
 
@@ -95,6 +136,37 @@ namespace RectSlayer
             Player.DrawLine(g, mouseLocation);
         }
 
+        public void StartShooting(Point mouseLocation)
+        {
+            if (!Player.CanShoot) return;
+
+            Player.BallsToShoot = Level;
+
+            Player.CanShoot = false;
+
+            shootTimer.Start();
+            int dx = mouseLocation.X - Player.Position.X;
+            int dy = mouseLocation.Y - Player.Position.Y;
+            float alpha_radians = (float)Math.Atan2(dy, dx);
+
+            Player.xBallVelocity = (float)Math.Cos(alpha_radians) * Ball.VELOCITY;
+            Player.yBallVelocity = (float)Math.Sin(alpha_radians) * Ball.VELOCITY;
+        }
+
+        public void ShootBall()
+        {
+            Ball b = Player.ShootBall(Color.Red);
+            if (b != null)
+                Balls.Add(b);
+            if (Player.BallsShot == Player.BallsToShoot)
+            {
+                Player.BallsShot = 0;
+                Player.CanShoot = false;
+                canStartLevelIndicator = true;
+                shootTimer.Stop();
+            }
+        }
+
         public void GenerateRectangles()
         {
             int step = 80;
@@ -104,6 +176,7 @@ namespace RectSlayer
             {
                 Rectangle newRect = new Rectangle(new Point(currentStartingPoint, top + rectHeight + 3), rectWidth, rectHeight,
                     Color.Blue, 1);
+                newRect.HitsRemaining = Level;
                 Rectangles.Add(newRect);
                 currentStartingPoint += step;
             }

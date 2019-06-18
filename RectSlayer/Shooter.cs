@@ -11,47 +11,39 @@ namespace RectSlayer
     {
         public Point Position { get; set; }
 
-        public int BallsCount { get; set; }
+        public int BallsToShoot { get; set; }
 
-        public int BallsShot { get; set; } // shooting ball after ball
+        public int BallsShot { get; set; }
 
         public bool CanShoot { get; set; }
 
-        public List<Ball> Balls { get; set; } // might get moved to GameManager or not
-
+        public float xBallVelocity { get; set; }
+        public float yBallVelocity { get; set; }
         public Shooter(Point position)
         {
             this.Position = position;
-            this.BallsCount = 1;
+            this.BallsToShoot = 2;
             this.BallsShot = 0;
             this.CanShoot = true;
-            this.Balls = new List<Ball>();
+            xBallVelocity = 0;
+            yBallVelocity = 0;
         }
 
         // a ball hit the + power up
-        public void IncreaseCount()
+        public void IncreaseCBalls()
         {
-            ++BallsCount;
+            ++BallsToShoot;
         }
 
         //will be called in timer_tick, because we don't want to shoot all the balls at once
         //CanShoot goes false when the last ball is shot, it will go back to true when all the balls are dead
         // TODO: Reimplement later when GameManager is finished
-        public void ShootBall(float velocityX, float velocityY, Color color)
+        public Ball ShootBall(Color color)
         {
-            if(CanShoot)
-            {
-                if (BallsShot < BallsCount)
-                {
-                    ++BallsShot;
-                    Balls.Add(new Ball(this.Position, velocityX, velocityY, color));
-                }
-                else
-                {
-                    BallsShot = 0;
-                    CanShoot = false;
-                }
-            } 
+            ++BallsShot;
+            Point testP = new Point(Position.X, Position.Y);
+            return new Ball(testP, xBallVelocity, yBallVelocity, color);
+
         }
 
         // move to the position of the first dead ball

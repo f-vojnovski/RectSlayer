@@ -27,9 +27,11 @@ namespace RectSlayer
         public void Draw(Graphics g)
         {
             Brush brush = new SolidBrush(CurrentColor);
+            Brush lvlBrush = new SolidBrush(Color.White);
             g.FillRectangle(brush, LeftTopPoint.X, LeftTopPoint.Y, Width, Height);
-            //TODO: Draw the number of hits remaining
+            g.DrawString(HitsRemaining.ToString(), new Font("Arial", 10), lvlBrush, LeftTopPoint.X + 10, LeftTopPoint.Y + 5);
             brush.Dispose();
+            lvlBrush.Dispose();
         }
     }
 }

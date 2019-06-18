@@ -35,12 +35,11 @@
             // 
             // gameLoopTimer
             // 
-            this.gameLoopTimer.Interval = 30;
+            this.gameLoopTimer.Interval = 20;
             this.gameLoopTimer.Tick += new System.EventHandler(this.GameLoopTimer_Tick);
             // 
             // shootTimer
             // 
-            this.shootTimer.Interval = 150;
             this.shootTimer.Tick += new System.EventHandler(this.ShootTimer_Tick);
             // 
             // Form1

@@ -29,6 +29,8 @@ namespace RectSlayer
         bool canStartLevel;
         bool canStartLevelIndicator;
 
+        bool movedShooter;
+
         public GameManager(int left, int top, int width, int height, Timer shootTimer)
         {
             this.left = left;
@@ -36,9 +38,10 @@ namespace RectSlayer
             this.width = width;
             this.height = height;
             this.shootTimer = shootTimer;
-            rectWidth = width / 6 - 5;
+            rectWidth = width / 6 - 2;
             canStartLevel = false;
             canStartLevelIndicator = false;
+            movedShooter = false;
             StartGame();
         }
 
@@ -62,10 +65,16 @@ namespace RectSlayer
             foreach (Ball ball in Balls)
             {
 
-                foreach (Rectangle rect in Rectangles)
+                for (int i=Rectangles.Count-1;i>=0;--i)
                 {
-                    if(ball.CheckCollision(rect))
+                    if (ball.CheckCollision(Rectangles.ElementAt(i)))
+                    {
+                        if (Rectangles.ElementAt(i).HitsRemaining <= 0)
+                        {
+                            Rectangles.RemoveAt(i);
+                        }
                         break;
+                    }
                 }
 
                 ball.Move(left, top, width, height);
@@ -76,17 +85,16 @@ namespace RectSlayer
             {
                 if (Balls.ElementAt(i).IsDead)
                 {
+                    if (!movedShooter)
+                    {
+                        Player.Relocate(new Point(Balls.ElementAt(i).Center.X, Player.Position.Y));
+                        movedShooter = !movedShooter;
+                    }
                     Balls.RemoveAt(i);
                 }
             }
-            for (int i = Rectangles.Count - 1; i >= 0; i--)
-            {
-                if (Rectangles.ElementAt(i).HitsRemaining == 0)
-                {
-                    Rectangles.RemoveAt(i);
-                }
-            }
-            if (Balls.Count == 0)
+
+            if (Balls.Count <= 0)
             {
                 if(canStartLevelIndicator)
                 {
@@ -100,13 +108,13 @@ namespace RectSlayer
 
         private void IncreaseLevel()
         {
+            movedShooter = false;
             if (!canStartLevel) return;
             canStartLevel = false;
             ++Level;
             MoveRectangles();
             GenerateRectangles();
 
-            //if()
             canStartLevel = false;
         }
 
@@ -172,7 +180,7 @@ namespace RectSlayer
             int step = 80;
             int currentStartingPoint = left + 6;
 
-            for (int i = 0; i<objectsToGenerate; ++i)
+            for (int i = 0; i<objectsToGenerate-1; ++i)
             {
                 Rectangle newRect = new Rectangle(new Point(currentStartingPoint, top + rectHeight + 3), rectWidth, rectHeight,
                     Color.Blue, 1);

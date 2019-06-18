@@ -130,13 +130,19 @@ namespace RectSlayer
 
             if (distance <= RADIUS + 1)
             {
-                if (changeVerticalVelocity)
+                if (changeVerticalVelocity && !changeHorizontalVelocity)
                 {
                     VelocityY *= -1;
                 }
-                else if (changeHorizontalVelocity)
+                else if (changeHorizontalVelocity && !changeVerticalVelocity)
                 {
                     VelocityX *= -1;
+                }
+                else if (changeHorizontalVelocity && changeVerticalVelocity)
+                {
+                    VelocityX *= -1;
+                    VelocityY *= -1;
+                    Console.WriteLine("edge {0}",System.DateTime.Now);
                 }
 
                 rectangle.HitsRemaining--;

@@ -141,7 +141,22 @@ namespace RectSlayer
 
         public void DrawIndicatorLine(Graphics g, Point mouseLocation)
         {
-            Player.DrawLine(g, mouseLocation);
+            int mouseX = mouseLocation.X;
+            int mouseY = mouseLocation.Y;
+
+            if (mouseLocation.X > left + width)
+                mouseX = left + width;
+            else if (mouseLocation.X < left)
+                mouseX = left;
+
+            if (mouseLocation.Y > top + height)
+                mouseY = top + height;
+            else if (mouseLocation.Y < top)
+                mouseY = top;
+
+            Point newMouseLocation = new Point(mouseX, mouseY);
+
+            Player.DrawLine(g, newMouseLocation);
         }
 
         public void StartShooting(Point mouseLocation)

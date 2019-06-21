@@ -23,7 +23,7 @@ namespace RectSlayer
 
         public bool IsDead { get; private set; }
 
-        float xPos, yPos;
+        private float xPos, yPos;
 
         public Ball(Point center, float velocityX, float velocityY, Color color)
         {
@@ -53,19 +53,11 @@ namespace RectSlayer
                 VelocityX *= -1;
             }
 
-            /*
-            if (y - RADIUS <= top || y + RADIUS >= top + height)
-            {
-                VelocityY *= -1;
-            }
-            */
-
             if(y - RADIUS <= top)
             {
                 VelocityY *= -1;
             }
             
-
             if(y + RADIUS >= top + height)
             {
                 IsDead = true;

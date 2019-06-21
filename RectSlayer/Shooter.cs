@@ -72,6 +72,7 @@ namespace RectSlayer
             }
             Pen pen = new Pen(Color.White, 2);
             pen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
+
             g.DrawLine(pen, Position, mouseLocation);
             pen.Dispose();
         }

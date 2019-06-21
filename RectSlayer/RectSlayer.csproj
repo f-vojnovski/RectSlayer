@@ -54,10 +54,15 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="GameManager.cs" />
+    <Compile Include="HorizontalHitPowerUp.cs" />
+    <Compile Include="PlusPowerUp.cs" />
+    <Compile Include="PowerUp.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RandomDirectionPowerUp.cs" />
     <Compile Include="Rectangle.cs" />
     <Compile Include="Shooter.cs" />
+    <Compile Include="VerticalHitPowerUp.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

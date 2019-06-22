@@ -8,3 +8,13 @@ C:\Users\toset\RectSlayer\RectSlayer\obj\Debug\RectSlayer.csproj.GenerateResourc
 C:\Users\toset\RectSlayer\RectSlayer\obj\Debug\RectSlayer.csproj.CoreCompileInputs.cache
 C:\Users\toset\RectSlayer\RectSlayer\obj\Debug\RectSlayer.exe
 C:\Users\toset\RectSlayer\RectSlayer\obj\Debug\RectSlayer.pdb
+D:\Projects\RectSlayer Game\RectSlayer\RectSlayer\bin\Debug\RectSlayer.exe.config
+D:\Projects\RectSlayer Game\RectSlayer\RectSlayer\bin\Debug\RectSlayer.exe
+D:\Projects\RectSlayer Game\RectSlayer\RectSlayer\bin\Debug\RectSlayer.pdb
+D:\Projects\RectSlayer Game\RectSlayer\RectSlayer\obj\Debug\RectSlayer.csprojAssemblyReference.cache
+D:\Projects\RectSlayer Game\RectSlayer\RectSlayer\obj\Debug\RectSlayer.Form1.resources
+D:\Projects\RectSlayer Game\RectSlayer\RectSlayer\obj\Debug\RectSlayer.Properties.Resources.resources
+D:\Projects\RectSlayer Game\RectSlayer\RectSlayer\obj\Debug\RectSlayer.csproj.GenerateResource.cache
+D:\Projects\RectSlayer Game\RectSlayer\RectSlayer\obj\Debug\RectSlayer.csproj.CoreCompileInputs.cache
+D:\Projects\RectSlayer Game\RectSlayer\RectSlayer\obj\Debug\RectSlayer.exe
+D:\Projects\RectSlayer Game\RectSlayer\RectSlayer\obj\Debug\RectSlayer.pdb

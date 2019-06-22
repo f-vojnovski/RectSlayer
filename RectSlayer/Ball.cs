@@ -13,7 +13,7 @@ namespace RectSlayer
 
         public static readonly int RADIUS = 10;
 
-        public static readonly float VELOCITY = 5;
+        public static readonly float VELOCITY = 6;
 
         public float VelocityX { get; set; }
 
@@ -132,8 +132,9 @@ namespace RectSlayer
                 }
                 else if (changeHorizontalVelocity && changeVerticalVelocity)
                 {
-                    VelocityX *= -1;
-                    VelocityY *= -1;
+                    float c = -2 * (VelocityX * xPos + VelocityY * yPos) / (xPos * xPos + yPos * yPos);
+                    VelocityX = VelocityX + c * xPos;
+                    VelocityY = VelocityY + c * yPos;
                     Console.WriteLine("edge {0}",System.DateTime.Now);
                 }
 

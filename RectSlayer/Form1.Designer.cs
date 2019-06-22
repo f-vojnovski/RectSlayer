@@ -35,18 +35,20 @@
             // 
             // gameLoopTimer
             // 
-            this.gameLoopTimer.Interval = 20;
+            this.gameLoopTimer.Interval = 10;
             this.gameLoopTimer.Tick += new System.EventHandler(this.GameLoopTimer_Tick);
             // 
             // shootTimer
             // 
+            this.shootTimer.Interval = 130;
             this.shootTimer.Tick += new System.EventHandler(this.ShootTimer_Tick);
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(679, 689);
+            this.ClientSize = new System.Drawing.Size(509, 560);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);

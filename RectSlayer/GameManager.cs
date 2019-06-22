@@ -31,6 +31,8 @@ namespace RectSlayer
 
         bool movedShooter;
 
+        Point newPlayerPosition;
+
         public GameManager(int left, int top, int width, int height, Timer shootTimer)
         {
             this.left = left;
@@ -87,7 +89,7 @@ namespace RectSlayer
                 {
                     if (!movedShooter)
                     {
-                        Player.Relocate(new Point(Balls.ElementAt(i).Center.X, Player.Position.Y));
+                        newPlayerPosition = new Point(Balls.ElementAt(i).Center.X, Player.Position.Y);
                         movedShooter = !movedShooter;
                     }
                     Balls.RemoveAt(i);
@@ -114,6 +116,11 @@ namespace RectSlayer
             ++Level;
             MoveRectangles();
             GenerateRectangles();
+
+            if (newPlayerPosition != null)
+            {
+                Player.Relocate(newPlayerPosition);
+            }
 
             canStartLevel = false;
         }

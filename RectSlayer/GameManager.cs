@@ -204,6 +204,7 @@ namespace RectSlayer
             MoveRectangles();
             MovePowerUps();
             GenerateRectangles();
+            Player.BallsToShoot = Level;
 
             if (newPlayerPosition != null)
             {

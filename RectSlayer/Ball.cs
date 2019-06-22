@@ -12,8 +12,8 @@ namespace RectSlayer
         public Point Center { get; set; }
 
         public static readonly int RADIUS = 10;
-
-        public static readonly float VELOCITY = 4.4f;
+         
+        public static readonly float VELOCITY = 4.8f;
 
         public static readonly float collisionMoveFactor = 1.8f;
 

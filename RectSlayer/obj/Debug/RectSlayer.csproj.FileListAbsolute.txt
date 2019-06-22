@@ -18,3 +18,4 @@ D:\Projects\RectSlayer Game\RectSlayer\RectSlayer\obj\Debug\RectSlayer.csproj.Ge
 D:\Projects\RectSlayer Game\RectSlayer\RectSlayer\obj\Debug\RectSlayer.csproj.CoreCompileInputs.cache
 D:\Projects\RectSlayer Game\RectSlayer\RectSlayer\obj\Debug\RectSlayer.exe
 D:\Projects\RectSlayer Game\RectSlayer\RectSlayer\obj\Debug\RectSlayer.pdb
+D:\Projects\RectSlayer Game\RectSlayer\RectSlayer\obj\Debug\RectSlayer.MainMenu.resources

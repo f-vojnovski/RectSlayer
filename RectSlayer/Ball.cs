@@ -13,7 +13,7 @@ namespace RectSlayer
 
         public static readonly int RADIUS = 10;
 
-        public static readonly float VELOCITY = 4f;
+        public static readonly float VELOCITY = 4.4f;
 
         public float VelocityX { get; set; }
 
@@ -25,8 +25,6 @@ namespace RectSlayer
 
         private float xPos, yPos;
 
-        private float oldX, oldY;
-
         public Ball(Point center, float velocityX, float velocityY, Color color)
         {
             this.Center = center;
@@ -36,8 +34,6 @@ namespace RectSlayer
             this.IsDead = false;
             xPos = Center.X;
             yPos = Center.Y;
-            oldX = xPos;
-            oldY = yPos;
         }
 
         public void Draw(Graphics g)
@@ -49,8 +45,6 @@ namespace RectSlayer
 
         public void Move(int left, int top, int width, int height)
         {
-            oldX = xPos;
-            oldY = yPos;
             float x = xPos + VelocityX;
             float y = yPos + VelocityY;
 
@@ -94,30 +88,32 @@ namespace RectSlayer
             bool changeHorizontalVelocity = false;
             bool changeVerticalVelocity = false;
 
+            float xMoveFactor = 0f, yMoveFactor = 0f;
+
 
             if (cx < rx)
             {
-
-                testX = rx;        
+                testX = rx;
+                xMoveFactor = -6;
                 changeHorizontalVelocity = true;
             }
             else if (cx > rx + rw)
             {
-
+                xMoveFactor = 6;
                 testX = rx + rw;     
                 changeHorizontalVelocity = true;
             }
 
             if (cy < ry)
             {
-  
+                yMoveFactor = -6;
                 testY = ry;
                 changeVerticalVelocity = true;
 
             }
             else if (cy > ry + rh)
             {
- 
+                xMoveFactor = 6;
                 testY = ry + rh;
                 changeVerticalVelocity = true;
 
@@ -139,14 +135,15 @@ namespace RectSlayer
                 }
                 else if (changeHorizontalVelocity && changeVerticalVelocity)
                 {
-                    xPos = oldX;
-                    yPos = oldY;
-                    float x = testX;
-                    float y = testY;
+                    float x  = xPos;
+                    float y = yPos;
                     float c = -2 * (VelocityX * x + VelocityY * y) / (x * x + y * y);
                     VelocityX = VelocityX + c * xPos;
                     VelocityY = VelocityY + c * yPos;
                 }
+
+                xPos += xMoveFactor;
+                yPos += yMoveFactor;
 
                 rectangle.HitsRemaining--;
 

@@ -142,7 +142,11 @@ namespace RectSlayer
                 return true;
             }
             return false;
+        }
 
+        internal void RandomDirection()
+        {
+            throw new NotImplementedException();
         }
     }
 }

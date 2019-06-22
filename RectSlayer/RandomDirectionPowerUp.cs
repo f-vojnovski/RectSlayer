@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RectSlayer
 {
-    class RandomDirectionPowerUp : PowerUp
+    public class RandomDirectionPowerUp : PowerUp
     {
         private static Random random = new Random(DateTime.Now.Millisecond);
 
@@ -16,9 +16,11 @@ namespace RectSlayer
 
         }
 
-        public override void UsePowerUp(Ball ball)
+        public void RandomDirection(Ball ball)
         {
-            throw new NotImplementedException();
+            double angle = random.NextDouble() * 2 * Math.PI;
+            ball.VelocityX = (float)(Math.Cos(angle) * Ball.VELOCITY);
+            ball.VelocityY = (float)(Math.Sin(angle) * Ball.VELOCITY);
         }
     }
 }

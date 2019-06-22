@@ -1,7 +1,10 @@
-﻿using System;
+﻿using RectSlayer.Properties;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,6 +16,8 @@ namespace RectSlayer
         public Shooter Player{ get; set; }
         public List<Ball> Balls { get; set; }
         public List<Rectangle> Rectangles { get; set; }
+
+        public List<PowerUp> PowerUps { get; set; }
 
         public int left { get; set; }
         public int top { get; set; }
@@ -31,6 +36,10 @@ namespace RectSlayer
 
         bool movedShooter;
 
+
+        private bool canDrawHorizontal;
+        private bool canDrawVertical;
+
         public GameManager(int left, int top, int width, int height, Timer shootTimer)
         {
             this.left = left;
@@ -42,7 +51,10 @@ namespace RectSlayer
             canStartLevel = false;
             canStartLevelIndicator = false;
             movedShooter = false;
+            canDrawHorizontal = false;
+            canDrawVertical = false;
             StartGame();
+            
         }
 
         public void StartGame()
@@ -51,9 +63,23 @@ namespace RectSlayer
             Player = new Shooter(new Point(left + width / 2, top + height - 20));
             Balls = new List<Ball>();
             Rectangles = new List<Rectangle>();
+            PowerUps = new List<PowerUp>();
             GenerateRectangles();
             Player.CanShoot = true;
+            PowerUps.Add(new HorizontalHitPowerUp(new Point(432, top + rectHeight + 3), Resources.horizontal));
+            PowerUps.Add(new VerticalHitPowerUp(new Point(left + 6, top + rectHeight * 2 + 6), Resources.vertical));
         }
+
+        /*
+        private Image getImage(string v)
+        {
+            Assembly myAssembly = Assembly.GetExecutingAssembly();
+            Stream myStream = myAssembly.GetManifestResourceStream("RectSlayer.Resources."+v);
+            Bitmap bmp = new Bitmap(myStream);
+
+            return bmp;
+        }
+        */
 
         public void GameOver()
         {
@@ -76,6 +102,8 @@ namespace RectSlayer
                         break;
                     }
                 }
+
+                CheckPowerUpHit(ball);
 
                 ball.Move(left, top, width, height);
 
@@ -106,6 +134,55 @@ namespace RectSlayer
             }
         }
 
+        private void CheckPowerUpHit(Ball ball)
+        {
+            for (int i = PowerUps.Count - 1; i >= 0; i--)
+            {
+                var powerUp = PowerUps.ElementAt(i);
+                if (powerUp.CheckCollision(ball))
+                {
+                    if (powerUp.ActivatePowerUp(ball))
+                    {
+                        if (powerUp.GetType() == typeof(PlusPowerUp))
+                        {
+                            Player.IncreaseCBalls();
+                            PowerUps.RemoveAt(i);
+                        }
+
+                        if (powerUp.GetType() == typeof(RandomDirectionPowerUp))
+                        {
+                            ((RandomDirectionPowerUp)powerUp).RandomDirection(ball);
+                        }
+
+                        if (powerUp.GetType() == typeof(HorizontalHitPowerUp))
+                        {
+                            canDrawHorizontal = true;
+                            ((HorizontalHitPowerUp)powerUp).Hit(Rectangles);
+                        }
+                        else
+                        {
+                            canDrawHorizontal = false;
+                        }
+
+                        if (powerUp.GetType() == typeof(VerticalHitPowerUp))
+                        {
+                            canDrawVertical = true;
+                            ((VerticalHitPowerUp)powerUp).Hit(Rectangles);
+                        }
+                        else
+                        {
+                            canDrawVertical = false;
+                        }
+                    }
+
+                }
+                else
+                {
+                    powerUp.FilterBalls();
+                }
+            }
+        }
+
         private void IncreaseLevel()
         {
             movedShooter = false;
@@ -113,9 +190,27 @@ namespace RectSlayer
             canStartLevel = false;
             ++Level;
             MoveRectangles();
+            MovePowerUps();
             GenerateRectangles();
 
             canStartLevel = false;
+        }
+
+        private void MovePowerUps()
+        {
+            for(int i=PowerUps.Count - 1; i >= 0; i--)
+            {
+                var powerUp = PowerUps.ElementAt(i);
+                if(powerUp.IsUsed)
+                {
+                    PowerUps.RemoveAt(i);
+                }
+                else
+                {
+                    powerUp.LeftTopPoint = new Point(powerUp.LeftTopPoint.X, powerUp.LeftTopPoint.Y + rectHeight + 3);
+                    powerUp.CalculateCenter();
+                }
+            }
         }
 
         private void MoveRectangles()
@@ -135,6 +230,10 @@ namespace RectSlayer
             foreach(Rectangle rect in Rectangles)
             {
                 rect.Draw(g);
+            }
+            foreach(PowerUp powerUp in PowerUps)
+            {
+                powerUp.Draw(g);
             }
             Player.Draw(g);
         }
@@ -162,8 +261,6 @@ namespace RectSlayer
         public void StartShooting(Point mouseLocation)
         {
             if (!Player.CanShoot) return;
-
-            Player.BallsToShoot = Level;
 
             Player.CanShoot = false;
 

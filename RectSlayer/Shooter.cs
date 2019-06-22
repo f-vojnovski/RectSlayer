@@ -22,7 +22,7 @@ namespace RectSlayer
         public Shooter(Point position)
         {
             this.Position = position;
-            this.BallsToShoot = 2;
+            this.BallsToShoot = 1;
             this.BallsShot = 0;
             this.CanShoot = true;
             xBallVelocity = 0;
@@ -35,9 +35,6 @@ namespace RectSlayer
             ++BallsToShoot;
         }
 
-        //will be called in timer_tick, because we don't want to shoot all the balls at once
-        //CanShoot goes false when the last ball is shot, it will go back to true when all the balls are dead
-        // TODO: Reimplement later when GameManager is finished
         public Ball ShootBall(Color color)
         {
             ++BallsShot;

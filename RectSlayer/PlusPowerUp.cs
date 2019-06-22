@@ -7,15 +7,11 @@ using System.Threading.Tasks;
 
 namespace RectSlayer
 {
-    class PlusPowerUp : PowerUp
+    public class PlusPowerUp : PowerUp
     {
         public PlusPowerUp(Point center, Image image) : base(center,image)
         {
 
-        }
-        public override void UsePowerUp(Ball ball)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -7,11 +7,15 @@ using System.Threading.Tasks;
 
 namespace RectSlayer
 {
-    abstract class PowerUp
+    public class PowerUp
     {
-        public Point Center { get; set; }
+        public Point LeftTopPoint { get; set; }
 
-        public static readonly int RADIUS = 10;
+        public List<Ball> BallsInside { get; set; }
+
+        protected float centerX;
+        protected float centerY;
+
 
         public Image PowerUpImage { get; set; }
 
@@ -19,16 +23,68 @@ namespace RectSlayer
 
         public PowerUp(Point center, Image image)
         {
-            this.Center = center;
+            this.LeftTopPoint = center;
             this.PowerUpImage = image;
+            CalculateCenter();
             IsUsed = false;
+            BallsInside = new List<Ball>();
+        }
+
+        public void CalculateCenter()
+        {
+            this.centerX = LeftTopPoint.X + PowerUpImage.Width / 2f;
+            this.centerY = LeftTopPoint.Y + PowerUpImage.Height / 2f;
         }
 
         public void Draw(Graphics g)
         {
-            g.DrawImage(PowerUpImage, Center);
+            g.DrawImage(PowerUpImage, LeftTopPoint);
+
+           /* 
+            Brush br = new SolidBrush(Color.White);
+            g.FillEllipse(br, centerX,centerY, 10, 10);
+            br.Dispose();
+            */
+
         }
 
-        abstract public void UsePowerUp(Ball ball);
+        public bool CheckCollision(Ball ball)
+        {
+            double ballX = ball.Center.X - Ball.RADIUS;
+            double ballY = ball.Center.Y - Ball.RADIUS;
+            double d = (centerX - ballX) * (centerX - ballX) + (centerY - ballY) * (centerY - ballY);
+            double radius = PowerUpImage.Width/2 + Ball.RADIUS;
+
+            return d <= radius * radius;
+        }
+
+        public bool ActivatePowerUp(Ball ball)
+        {
+            if(BallsInside.Contains(ball))
+            {
+                return false;
+            }
+
+            IsUsed = true;
+
+            BallsInside.Add(ball);
+
+            FilterBalls(); //remove balls that are no longer touching the powerup
+
+            return true;
+
+        }
+
+        public void FilterBalls()
+        {
+            for(int i=BallsInside.Count-1; i>=0; --i)
+            {
+                if(!CheckCollision(BallsInside.ElementAt(i)))
+                {
+                    BallsInside.RemoveAt(i);
+                }
+            }
+        }
+
     }
 }

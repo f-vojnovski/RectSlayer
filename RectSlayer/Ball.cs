@@ -137,6 +137,7 @@ namespace RectSlayer
                 }
                 else if (changeHorizontalVelocity && changeVerticalVelocity)
                 {
+                    // Otkad te sretoh ja nemam mira ...
                     float x  = xPos;
                     float y = yPos;
                     float c = -2 * (VelocityX * x + VelocityY * y) / (x * x + y * y);

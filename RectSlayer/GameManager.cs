@@ -68,20 +68,19 @@ namespace RectSlayer
         {
             foreach (Ball ball in Balls)
             {
-                ball.Move(left, top, width, height); 
 
                 for (int i=Rectangles.Count-1;i>=0;--i)
                 {
                     if (ball.CheckCollision(Rectangles.ElementAt(i)))
                     {
-                        //if (Rectangles.ElementAt(i).HitsRemaining <= 0)
-                        if (false)
+                        if (Rectangles.ElementAt(i).HitsRemaining <= 0)
                         {
                             Rectangles.RemoveAt(i);
                         }
                         break;
                     }
                 }
+                ball.Move(left, top, width, height); 
             }
             
             for (int i = Balls.Count - 1; i >= 0; i--)

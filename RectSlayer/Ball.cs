@@ -15,6 +15,8 @@ namespace RectSlayer
 
         public static readonly float VELOCITY = 4.4f;
 
+        public static readonly float collisionMoveFactor = 1.8f;
+
         public float VelocityX { get; set; }
 
         public float VelocityY { get; set; }
@@ -94,26 +96,26 @@ namespace RectSlayer
             if (cx < rx)
             {
                 testX = rx;
-                xMoveFactor = -6;
+                xMoveFactor = -VelocityX * collisionMoveFactor;
                 changeHorizontalVelocity = true;
             }
             else if (cx > rx + rw)
             {
-                xMoveFactor = 6;
+                xMoveFactor = -VelocityX * collisionMoveFactor;
                 testX = rx + rw;     
                 changeHorizontalVelocity = true;
             }
 
             if (cy < ry)
             {
-                yMoveFactor = -6;
+                yMoveFactor = -VelocityY * collisionMoveFactor;
                 testY = ry;
                 changeVerticalVelocity = true;
 
             }
             else if (cy > ry + rh)
             {
-                xMoveFactor = 6;
+                yMoveFactor = -VelocityY * collisionMoveFactor;
                 testY = ry + rh;
                 changeVerticalVelocity = true;
 

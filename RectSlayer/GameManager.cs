@@ -78,8 +78,8 @@ namespace RectSlayer
                         break;
                     }
                 }
+                ball.Move(left, top, width, height); 
 
-                ball.Move(left, top, width, height);
 
             }
             
@@ -129,7 +129,7 @@ namespace RectSlayer
         {
             foreach(Rectangle rect in Rectangles)
             {
-                rect.LeftTopPoint = new Point(rect.LeftTopPoint.X, rect.LeftTopPoint.Y + rectHeight+3);
+                rect.LeftTopPoint = new Point(rect.LeftTopPoint.X, rect.LeftTopPoint.Y + rectHeight+2);
             }
         }
 

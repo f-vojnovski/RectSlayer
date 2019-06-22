@@ -13,7 +13,7 @@ namespace RectSlayer
 
         public static readonly int RADIUS = 10;
 
-        public static readonly float VELOCITY = 6;
+        public static readonly float VELOCITY = 4f;
 
         public float VelocityX { get; set; }
 
@@ -25,6 +25,8 @@ namespace RectSlayer
 
         private float xPos, yPos;
 
+        private float oldX, oldY;
+
         public Ball(Point center, float velocityX, float velocityY, Color color)
         {
             this.Center = center;
@@ -34,6 +36,8 @@ namespace RectSlayer
             this.IsDead = false;
             xPos = Center.X;
             yPos = Center.Y;
+            oldX = xPos;
+            oldY = yPos;
         }
 
         public void Draw(Graphics g)
@@ -45,6 +49,8 @@ namespace RectSlayer
 
         public void Move(int left, int top, int width, int height)
         {
+            oldX = xPos;
+            oldY = yPos;
             float x = xPos + VelocityX;
             float y = yPos + VelocityY;
 
@@ -122,6 +128,7 @@ namespace RectSlayer
 
             if (distance <= RADIUS + 1)
             {
+
                 if (changeVerticalVelocity && !changeHorizontalVelocity)
                 {
                     VelocityY *= -1;
@@ -132,10 +139,13 @@ namespace RectSlayer
                 }
                 else if (changeHorizontalVelocity && changeVerticalVelocity)
                 {
-                    float c = -2 * (VelocityX * xPos + VelocityY * yPos) / (xPos * xPos + yPos * yPos);
+                    xPos = oldX;
+                    yPos = oldY;
+                    float x = testX;
+                    float y = testY;
+                    float c = -2 * (VelocityX * x + VelocityY * y) / (x * x + y * y);
                     VelocityX = VelocityX + c * xPos;
                     VelocityY = VelocityY + c * yPos;
-                    Console.WriteLine("edge {0}",System.DateTime.Now);
                 }
 
                 rectangle.HitsRemaining--;

@@ -13,9 +13,9 @@ namespace RectSlayer
 
         public static readonly int RADIUS = 10;
          
-        public static readonly float VELOCITY = 4.8f;
+        public static readonly float VELOCITY = 4.4f;
 
-        public static readonly float collisionMoveFactor = 1.8f;
+        public static readonly float collisionMoveFactor = 2.3f;
 
         public float VelocityX { get; set; }
 
@@ -130,13 +130,18 @@ namespace RectSlayer
                 if (changeVerticalVelocity && !changeHorizontalVelocity)
                 {
                     VelocityY *= -1;
+                    xPos += xMoveFactor;
                 }
                 else if (changeHorizontalVelocity && !changeVerticalVelocity)
                 {
                     VelocityX *= -1;
+                    yPos += yMoveFactor;
+
                 }
                 else if (changeHorizontalVelocity && changeVerticalVelocity)
                 {
+                    xPos += xMoveFactor * Math.Abs(VelocityX) / VELOCITY;
+                    yPos += yMoveFactor * Math.Abs(VelocityY) / VELOCITY;
                     // Otkad te sretoh ja nemam mira ...
                     float x  = xPos;
                     float y = yPos;
@@ -145,8 +150,6 @@ namespace RectSlayer
                     VelocityY = VelocityY + c * yPos;
                 }
 
-                xPos += xMoveFactor;
-                yPos += yMoveFactor;
 
                 rectangle.HitsRemaining--;
 

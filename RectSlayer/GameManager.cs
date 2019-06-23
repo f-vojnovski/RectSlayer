@@ -98,6 +98,7 @@ namespace RectSlayer
                 {
                     if (ball.CheckCollision(Rectangles.ElementAt(i)))
                     {
+                        if(false)
                         if (Rectangles.ElementAt(i).HitsRemaining <= 0)
                         {
                             Rectangles.RemoveAt(i);

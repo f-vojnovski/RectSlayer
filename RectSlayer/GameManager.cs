@@ -87,6 +87,9 @@ namespace RectSlayer
 
         public void HandleLogic()
         {
+            foreach (PowerUp powerUp in PowerUps)
+                powerUp.IsActive = false;
+
             foreach (Ball ball in Balls)
             {
                 CheckRectangleCollision(ball);
@@ -157,7 +160,6 @@ namespace RectSlayer
             for (int i = PowerUps.Count - 1; i >= 0; i--)
             {
                 var powerUp = PowerUps.ElementAt(i);
-                powerUp.IsActive = false;
                 if (powerUp.CheckCollision(ball))
                 {
                     if (powerUp.ActivatePowerUp(ball))
@@ -225,7 +227,7 @@ namespace RectSlayer
                 }
                 else
                 {
-                    powerUp.LeftTopPoint = new Point(powerUp.LeftTopPoint.X, powerUp.LeftTopPoint.Y + rectHeight + 3);
+                    powerUp.LeftTopPoint = new Point(powerUp.LeftTopPoint.X, powerUp.LeftTopPoint.Y + rectHeight + 2);
                     powerUp.CalculateCenter();
                 }
             }
@@ -265,11 +267,11 @@ namespace RectSlayer
             Brush brush = new SolidBrush(Color.White);
             if(powerUp.GetType() == typeof(HorizontalHitPowerUp))
             {
-                g.FillRectangle(brush, left, powerUp.LeftTopPoint.Y, width, powerUp.PowerUpImage.Height / 2);
+                g.FillRectangle(brush, left, powerUp.LeftTopPoint.Y, width, powerUp.PowerUpImage.Height);
             }
             else
             {
-                g.FillRectangle(brush, powerUp.LeftTopPoint.X, top, powerUp.PowerUpImage.Width/2, height);
+                g.FillRectangle(brush, powerUp.LeftTopPoint.X, top, powerUp.PowerUpImage.Width, height);
             }
             brush.Dispose();
         }

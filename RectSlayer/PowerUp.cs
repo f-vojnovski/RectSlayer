@@ -49,7 +49,7 @@ namespace RectSlayer
             double ballX = ball.Center.X - Ball.RADIUS;
             double ballY = ball.Center.Y - Ball.RADIUS;
             double d = (centerX - ballX) * (centerX - ballX) + (centerY - ballY) * (centerY - ballY);
-            double radius = PowerUpImage.Width/2 + Ball.RADIUS;
+            double radius = PowerUpImage.Width/2.0 + Ball.RADIUS;
 
             return d <= radius * radius;
         }

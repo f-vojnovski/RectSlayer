@@ -21,12 +21,15 @@ namespace RectSlayer
 
         public bool IsUsed { get; set; }
 
+        public bool IsActive { get; set; }
+
         public PowerUp(Point center, Image image)
         {
             this.LeftTopPoint = center;
             this.PowerUpImage = image;
             CalculateCenter();
             IsUsed = false;
+            IsActive = false;
             BallsInside = new List<Ball>();
         }
 
@@ -39,13 +42,6 @@ namespace RectSlayer
         public void Draw(Graphics g)
         {
             g.DrawImage(PowerUpImage, LeftTopPoint);
-
-           /* 
-            Brush br = new SolidBrush(Color.White);
-            g.FillEllipse(br, centerX,centerY, 10, 10);
-            br.Dispose();
-            */
-
         }
 
         public bool CheckCollision(Ball ball)
@@ -53,7 +49,7 @@ namespace RectSlayer
             double ballX = ball.Center.X - Ball.RADIUS;
             double ballY = ball.Center.Y - Ball.RADIUS;
             double d = (centerX - ballX) * (centerX - ballX) + (centerY - ballY) * (centerY - ballY);
-            double radius = PowerUpImage.Width/2 + Ball.RADIUS;
+            double radius = PowerUpImage.Width/2.0 + Ball.RADIUS;
 
             return d <= radius * radius;
         }

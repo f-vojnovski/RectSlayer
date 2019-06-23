@@ -33,7 +33,7 @@ namespace RectSlayer
             leftX = 10;
             topY = 100;
             width = this.Width - 40;
-            height = this.Height - (int)(2 * topY);
+            height = this.Height - (int)(2.1 * topY);
             Manager = new GameManager(leftX, topY, width, height, shootTimer);
             gameLoopTimer.Start();
         }
@@ -51,7 +51,27 @@ namespace RectSlayer
         private void GameLoopTimer_Tick(object sender, EventArgs e)
         {
             Manager.HandleLogic();
+            lblLevel.Text = "Level: " + Manager.Level.ToString();
+            lblBalls.Text = "Shots: " + Manager.Player.BallsToShoot.ToString();
             Invalidate(true);
+
+            if (Manager.isGameOver)
+            {
+                gameLoopTimer.Stop();
+                DialogResult dialogResult = MessageBox.Show("Play again?", "Game Over", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    gameLoopTimer.Start();
+                    Manager.StartGame();
+                }
+                else if (dialogResult == DialogResult.No)
+                {
+                    this.Hide();
+                    var oForm = new MainMenu();
+                    oForm.Closed += (s, args) => this.Close();
+                    oForm.Show();
+                }
+            }
         }
 
         private void Form1_MouseMove(object sender, MouseEventArgs e)

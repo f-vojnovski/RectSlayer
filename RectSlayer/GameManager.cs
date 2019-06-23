@@ -44,6 +44,12 @@ namespace RectSlayer
 
         private static readonly int PlayerClampDistance = 3;
 
+        private static readonly int yGameOverCheck = 420;
+
+        public bool isGameOver { get; set; }
+
+        private static readonly float shootAngleLimitation = 0.08f;
+
         public GameManager(int left, int top, int width, int height, Timer shootTimer)
         {
             this.left = left;
@@ -57,7 +63,6 @@ namespace RectSlayer
             movedShooter = false;
             powerUpFactory = new PowerUpsFactory();
             StartGame();
-            
         }
 
         public void StartGame()
@@ -69,6 +74,7 @@ namespace RectSlayer
             PowerUps = new List<PowerUp>();
             GenerateObjects();
             Player.CanShoot = true;
+            isGameOver = false;
         }
 
         /*
@@ -84,7 +90,7 @@ namespace RectSlayer
 
         public void GameOver()
         {
-
+            isGameOver = true;
         }
 
         public void HandleLogic()
@@ -216,6 +222,19 @@ namespace RectSlayer
             }
 
             canStartLevel = false;
+
+            for (int i = PowerUps.Count - 1; i >= 0; --i)
+            {
+                if (PowerUps.ElementAt(i).LeftTopPoint.Y > yGameOverCheck)
+                {
+                    PowerUps.RemoveAt(i);
+                }
+            }
+
+            if (GameOverCheck())
+            {
+                GameOver();
+            }
         }
 
         private void MovePowerUps()
@@ -302,15 +321,24 @@ namespace RectSlayer
         {
             if (!Player.CanShoot) return;
 
+            int dx = mouseLocation.X - Player.Position.X;
+            int dy = mouseLocation.Y - Player.Position.Y;
+            float alphaRadians = (float)Math.Atan2(dy, dx);
+
+            if (alphaRadians > - shootAngleLimitation) return;
+
+            if (alphaRadians < -Math.PI + shootAngleLimitation) return;
+
+            Console.WriteLine(alphaRadians);
+
+
             Player.CanShoot = false;
 
             shootTimer.Start();
-            int dx = mouseLocation.X - Player.Position.X;
-            int dy = mouseLocation.Y - Player.Position.Y;
-            float alpha_radians = (float)Math.Atan2(dy, dx);
 
-            Player.xBallVelocity = (float)Math.Cos(alpha_radians) * Ball.VELOCITY;
-            Player.yBallVelocity = (float)Math.Sin(alpha_radians) * Ball.VELOCITY;
+
+            Player.xBallVelocity = (float)Math.Cos(alphaRadians) * Ball.VELOCITY;
+            Player.yBallVelocity = (float)Math.Sin(alphaRadians) * Ball.VELOCITY;
         }
 
         public void ShootBall()
@@ -327,7 +355,17 @@ namespace RectSlayer
             }
         }
 
-
+        public bool GameOverCheck()
+        {
+            foreach(Rectangle rect in Rectangles)
+            {
+                if (rect.LeftTopPoint.Y > yGameOverCheck)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         public void GenerateObjects()
         {
             int height = top + rectHeight + 3;

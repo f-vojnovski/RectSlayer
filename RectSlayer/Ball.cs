@@ -12,7 +12,7 @@ namespace RectSlayer
         public Point Center { get; set; }
 
         public static readonly int RADIUS = 10;
-         
+
         public static readonly float VELOCITY = 4.4f;
 
         public static readonly float collisionMoveFactor = 2.3f;
@@ -50,17 +50,17 @@ namespace RectSlayer
             float x = xPos + VelocityX;
             float y = yPos + VelocityY;
 
-            if(x - RADIUS <= left || x + RADIUS >= left + width)
+            if (x - RADIUS <= left || x + RADIUS >= left + width)
             {
                 VelocityX *= -1;
             }
 
-            if(y - RADIUS <= top)
+            if (y - RADIUS <= top)
             {
                 VelocityY *= -1;
             }
-            
-            if(y + RADIUS >= top + height)
+
+            if (y + RADIUS >= top + height)
             {
                 IsDead = true;
             }
@@ -102,7 +102,7 @@ namespace RectSlayer
             else if (cx > rx + rw)
             {
                 xMoveFactor = -VelocityX * collisionMoveFactor;
-                testX = rx + rw;     
+                testX = rx + rw;
                 changeHorizontalVelocity = true;
             }
 
@@ -142,8 +142,7 @@ namespace RectSlayer
                 {
                     xPos += xMoveFactor * Math.Abs(VelocityX) / VELOCITY;
                     yPos += yMoveFactor * Math.Abs(VelocityY) / VELOCITY;
-                    // Otkad te sretoh ja nemam mira ...
-                    float x  = xPos;
+                    float x = xPos;
                     float y = yPos;
                     float c = -2 * (VelocityX * x + VelocityY * y) / (x * x + y * y);
                     VelocityX = VelocityX + c * xPos;

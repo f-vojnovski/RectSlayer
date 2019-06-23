@@ -30,3 +30,4 @@ C:\Users\toset\OneDrive\Documents\RectSlayer-PhysicsTests\RectSlayer\obj\Debug\R
 C:\Users\toset\OneDrive\Documents\RectSlayer-PhysicsTests\RectSlayer\obj\Debug\RectSlayer.csproj.CoreCompileInputs.cache
 C:\Users\toset\OneDrive\Documents\RectSlayer-PhysicsTests\RectSlayer\obj\Debug\RectSlayer.exe
 C:\Users\toset\OneDrive\Documents\RectSlayer-PhysicsTests\RectSlayer\obj\Debug\RectSlayer.pdb
+C:\Users\toset\RectSlayer\RectSlayer\obj\Debug\RectSlayer.MainMenu.resources

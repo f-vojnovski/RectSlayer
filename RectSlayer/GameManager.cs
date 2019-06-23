@@ -29,6 +29,7 @@ namespace RectSlayer
         private int rectHeight = 40;
 
         private static readonly int objectsToGenerate = 6;
+        private PowerUpsFactory powerUpFactory;
         private static Random random = new Random(DateTime.Now.Millisecond);
 
         private Timer shootTimer;
@@ -41,9 +42,6 @@ namespace RectSlayer
 
         private static readonly int PlayerClampDistance = 3;
 
-        private bool canDrawHorizontal;
-        private bool canDrawVertical;
-
         public GameManager(int left, int top, int width, int height, Timer shootTimer)
         {
             this.left = left;
@@ -55,8 +53,7 @@ namespace RectSlayer
             canStartLevel = false;
             canStartLevelIndicator = false;
             movedShooter = false;
-            canDrawHorizontal = false;
-            canDrawVertical = false;
+            powerUpFactory = new PowerUpsFactory();
             StartGame();
             
         }
@@ -68,10 +65,8 @@ namespace RectSlayer
             Balls = new List<Ball>();
             Rectangles = new List<Rectangle>();
             PowerUps = new List<PowerUp>();
-            GenerateRectangles();
+            GenerateObjects();
             Player.CanShoot = true;
-            PowerUps.Add(new HorizontalHitPowerUp(new Point(432, top + rectHeight + 3), Resources.horizontal));
-            PowerUps.Add(new VerticalHitPowerUp(new Point(left + 6, top + rectHeight * 2 + 6), Resources.vertical));
         }
 
         /*
@@ -110,8 +105,9 @@ namespace RectSlayer
                     canStartLevel = true;
                     canStartLevelIndicator = false;
                     Player.CanShoot = true;
+                    IncreaseLevel();
                 }
-                IncreaseLevel(); 
+                
             }
         }
 
@@ -161,6 +157,7 @@ namespace RectSlayer
             for (int i = PowerUps.Count - 1; i >= 0; i--)
             {
                 var powerUp = PowerUps.ElementAt(i);
+                powerUp.IsActive = false;
                 if (powerUp.CheckCollision(ball))
                 {
                     if (powerUp.ActivatePowerUp(ball))
@@ -178,23 +175,17 @@ namespace RectSlayer
 
                         if (powerUp.GetType() == typeof(HorizontalHitPowerUp))
                         {
-                            canDrawHorizontal = true;
+                            powerUp.IsActive = true;
                             ((HorizontalHitPowerUp)powerUp).Hit(Rectangles);
                         }
-                        else
-                        {
-                            canDrawHorizontal = false;
-                        }
+                        
 
                         if (powerUp.GetType() == typeof(VerticalHitPowerUp))
                         {
-                            canDrawVertical = true;
+                            powerUp.IsActive = true;
                             ((VerticalHitPowerUp)powerUp).Hit(Rectangles);
                         }
-                        else
-                        {
-                            canDrawVertical = false;
-                        }
+                        
                     }
 
                 }
@@ -213,8 +204,7 @@ namespace RectSlayer
             ++Level;
             MoveRectangles();
             MovePowerUps();
-            GenerateRectangles();
-            Player.BallsToShoot = Level;
+            GenerateObjects();
 
             if (newPlayerPosition != null)
             {
@@ -262,8 +252,26 @@ namespace RectSlayer
             foreach(PowerUp powerUp in PowerUps)
             {
                 powerUp.Draw(g);
+                if(powerUp.IsActive)
+                {
+                    DrawActivePowerUp(g, powerUp);
+                }
             }
             Player.Draw(g);
+        }
+
+        private void DrawActivePowerUp(Graphics g, PowerUp powerUp)
+        {
+            Brush brush = new SolidBrush(Color.White);
+            if(powerUp.GetType() == typeof(HorizontalHitPowerUp))
+            {
+                g.FillRectangle(brush, left, powerUp.LeftTopPoint.Y, width, powerUp.PowerUpImage.Height / 2);
+            }
+            else
+            {
+                g.FillRectangle(brush, powerUp.LeftTopPoint.X, top, powerUp.PowerUpImage.Width/2, height);
+            }
+            brush.Dispose();
         }
 
         public void DrawIndicatorLine(Graphics g, Point mouseLocation)
@@ -315,24 +323,39 @@ namespace RectSlayer
             }
         }
 
-        public void GenerateRectangles()
-        {
-            int step = 80;
-            int currentStartingPoint = left + 6;
-
-            for (int i = 0; i<objectsToGenerate-1; ++i)
-            {
-                Rectangle newRect = new Rectangle(new Point(currentStartingPoint, top + rectHeight + 3), rectWidth, rectHeight,
-                    Color.Blue, 1);
-                newRect.HitsRemaining = Level;
-                Rectangles.Add(newRect);
-                currentStartingPoint += step;
-            }
-        }
 
         public void GenerateObjects()
         {
+            int height = top + rectHeight + 3;
+            int step = 80;
+            int extraStep = step / 5;
+            int startingPoint = left + 6;
+            List<int> positions = new List<int>();
 
+            for (int i = 0; i < objectsToGenerate; i++)
+                positions.Add(i);
+
+            //plus powerUp - generate position
+            int rnd = random.Next(objectsToGenerate);
+            positions.Remove(rnd);
+            PowerUps.Add(powerUpFactory.GeneratePowerUp(new Point(startingPoint + rnd * step + extraStep, height), 10)); //plus powerUp
+
+            foreach(int pos in positions)
+            {
+                rnd = random.Next(11);
+                
+                if (rnd < 7)
+                {
+                    Point point = new Point(startingPoint + pos * step, height);
+                    Rectangles.Add(new Rectangle(point, rectWidth, rectHeight, Color.Blue, Level));
+                }
+                else if (rnd < 9)
+                {
+                    Point point = new Point(startingPoint + pos * step + extraStep, height);
+                    PowerUps.Add(powerUpFactory.GeneratePowerUp(point, random.Next(10)));
+                }
+                //else -> empty position
+            }
         }
     }
 }

@@ -19,7 +19,7 @@ namespace RectSlayer
             for(int i=rectangles.Count-1; i>=0; i--)
             {
                 var rect = rectangles.ElementAt(i);
-                if(Math.Abs(rect.LeftTopPoint.X - this.LeftTopPoint.X) < 10)
+                if(Math.Abs(rect.LeftTopPoint.X - this.LeftTopPoint.X) < rect.Width/2)
                 {
                     rect.HitsRemaining--;
 

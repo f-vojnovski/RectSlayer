@@ -29,6 +29,7 @@ namespace RectSlayer
         private int rectHeight = 40;
 
         private static readonly int objectsToGenerate = 6;
+        private static Random random = new Random(DateTime.Now.Millisecond);
 
         private Timer shootTimer;
         bool canStartLevel;
@@ -93,24 +94,29 @@ namespace RectSlayer
         {
             foreach (Ball ball in Balls)
             {
+                CheckRectangleCollision(ball);
 
-                for (int i=Rectangles.Count-1;i>=0;--i)
-                {
-                    if (ball.CheckCollision(Rectangles.ElementAt(i)))
-                    {
-                        if (Rectangles.ElementAt(i).HitsRemaining <= 0)
-                        {
-                            Rectangles.RemoveAt(i);
-                        }
-                        break;
-                    }
-                }
-
-                CheckPowerUpHit(ball);
+                CheckPowerUpCollision(ball);
 				
 				ball.Move(left, top, width, height); 
             }
-            
+
+            CheckDeadBalls();
+
+            if (Balls.Count <= 0)
+            {
+                if(canStartLevelIndicator)
+                {
+                    canStartLevel = true;
+                    canStartLevelIndicator = false;
+                    Player.CanShoot = true;
+                }
+                IncreaseLevel(); 
+            }
+        }
+
+        private void CheckDeadBalls()
+        {
             for (int i = Balls.Count - 1; i >= 0; i--)
             {
                 if (Balls.ElementAt(i).IsDead)
@@ -123,7 +129,7 @@ namespace RectSlayer
                             xNewPos = left + PlayerClampDistance;
                         }
                         // 30 is player width, it is hard coded for now
-                        else if (xNewPos > left + width - PlayerClampDistance - 30)     
+                        else if (xNewPos > left + width - PlayerClampDistance - 30)
                         {
                             xNewPos = left + width - PlayerClampDistance - 30;
                         }
@@ -133,20 +139,24 @@ namespace RectSlayer
                     Balls.RemoveAt(i);
                 }
             }
+        }
 
-            if (Balls.Count <= 0)
+        private void CheckRectangleCollision(Ball ball)
+        {
+            for (int i = Rectangles.Count - 1; i >= 0; --i)
             {
-                if(canStartLevelIndicator)
+                if (ball.CheckCollision(Rectangles.ElementAt(i)))
                 {
-                    canStartLevel = true;
-                    canStartLevelIndicator = false;
+                    if (Rectangles.ElementAt(i).HitsRemaining <= 0)
+                    {
+                        Rectangles.RemoveAt(i);
+                    }
+                    break;
                 }
-                IncreaseLevel();
-                Player.CanShoot = true;
             }
         }
 
-        private void CheckPowerUpHit(Ball ball)
+        private void CheckPowerUpCollision(Ball ball)
         {
             for (int i = PowerUps.Count - 1; i >= 0; i--)
             {
@@ -318,6 +328,11 @@ namespace RectSlayer
                 Rectangles.Add(newRect);
                 currentStartingPoint += step;
             }
+        }
+
+        public void GenerateObjects()
+        {
+
         }
     }
 }

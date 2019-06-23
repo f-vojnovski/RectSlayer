@@ -36,6 +36,9 @@ namespace RectSlayer
 
         bool movedShooter;
 
+        Point newPlayerPosition;
+
+        private static readonly int PlayerClampDistance = 3;
 
         private bool canDrawHorizontal;
         private bool canDrawVertical;
@@ -104,9 +107,8 @@ namespace RectSlayer
                 }
 
                 CheckPowerUpHit(ball);
-
-                ball.Move(left, top, width, height);
-
+				
+				ball.Move(left, top, width, height); 
             }
             
             for (int i = Balls.Count - 1; i >= 0; i--)
@@ -115,7 +117,17 @@ namespace RectSlayer
                 {
                     if (!movedShooter)
                     {
-                        Player.Relocate(new Point(Balls.ElementAt(i).Center.X, Player.Position.Y));
+                        int xNewPos = Balls.ElementAt(i).Center.X;
+                        if (xNewPos < left + PlayerClampDistance)
+                        {
+                            xNewPos = left + PlayerClampDistance;
+                        }
+                        // 30 is player width, it is hard coded for now
+                        else if (xNewPos > left + width - PlayerClampDistance - 30)     
+                        {
+                            xNewPos = left + width - PlayerClampDistance - 30;
+                        }
+                        newPlayerPosition = new Point(xNewPos, Player.Position.Y);
                         movedShooter = !movedShooter;
                     }
                     Balls.RemoveAt(i);
@@ -192,6 +204,12 @@ namespace RectSlayer
             MoveRectangles();
             MovePowerUps();
             GenerateRectangles();
+            Player.BallsToShoot = Level;
+
+            if (newPlayerPosition != null)
+            {
+                Player.Relocate(newPlayerPosition);
+            }
 
             canStartLevel = false;
         }
@@ -217,7 +235,7 @@ namespace RectSlayer
         {
             foreach(Rectangle rect in Rectangles)
             {
-                rect.LeftTopPoint = new Point(rect.LeftTopPoint.X, rect.LeftTopPoint.Y + rectHeight+3);
+                rect.LeftTopPoint = new Point(rect.LeftTopPoint.X, rect.LeftTopPoint.Y + rectHeight+2);
             }
         }
 

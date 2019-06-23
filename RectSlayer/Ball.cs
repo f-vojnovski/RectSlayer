@@ -12,8 +12,10 @@ namespace RectSlayer
         public Point Center { get; set; }
 
         public static readonly int RADIUS = 10;
+         
+        public static readonly float VELOCITY = 4.8f;
 
-        public static readonly float VELOCITY = 5;
+        public static readonly float collisionMoveFactor = 1.8f;
 
         public float VelocityX { get; set; }
 
@@ -88,30 +90,32 @@ namespace RectSlayer
             bool changeHorizontalVelocity = false;
             bool changeVerticalVelocity = false;
 
+            float xMoveFactor = 0f, yMoveFactor = 0f;
+
 
             if (cx < rx)
             {
-
-                testX = rx;        
+                testX = rx;
+                xMoveFactor = -VelocityX * collisionMoveFactor;
                 changeHorizontalVelocity = true;
             }
             else if (cx > rx + rw)
             {
-
+                xMoveFactor = -VelocityX * collisionMoveFactor;
                 testX = rx + rw;     
                 changeHorizontalVelocity = true;
             }
 
             if (cy < ry)
             {
-  
+                yMoveFactor = -VelocityY * collisionMoveFactor;
                 testY = ry;
                 changeVerticalVelocity = true;
 
             }
             else if (cy > ry + rh)
             {
- 
+                yMoveFactor = -VelocityY * collisionMoveFactor;
                 testY = ry + rh;
                 changeVerticalVelocity = true;
 
@@ -122,6 +126,7 @@ namespace RectSlayer
 
             if (distance <= RADIUS + 1)
             {
+
                 if (changeVerticalVelocity && !changeHorizontalVelocity)
                 {
                     VelocityY *= -1;
@@ -132,10 +137,16 @@ namespace RectSlayer
                 }
                 else if (changeHorizontalVelocity && changeVerticalVelocity)
                 {
-                    VelocityX *= -1;
-                    VelocityY *= -1;
-                    Console.WriteLine("edge {0}",System.DateTime.Now);
+                    // Otkad te sretoh ja nemam mira ...
+                    float x  = xPos;
+                    float y = yPos;
+                    float c = -2 * (VelocityX * x + VelocityY * y) / (x * x + y * y);
+                    VelocityX = VelocityX + c * xPos;
+                    VelocityY = VelocityY + c * yPos;
                 }
+
+                xPos += xMoveFactor;
+                yPos += yMoveFactor;
 
                 rectangle.HitsRemaining--;
 

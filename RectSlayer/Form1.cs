@@ -26,6 +26,7 @@ namespace RectSlayer
             this.DoubleBuffered = true;
             SetupVariables();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
         }
         private void SetupVariables()
         {

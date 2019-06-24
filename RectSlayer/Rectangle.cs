@@ -14,6 +14,7 @@ namespace RectSlayer
         public int Height { get; set; }
         public Color CurrentColor { get; set; }
         public int HitsRemaining { get; set; }
+        private readonly int maxColorHits = 20;
 
         public Rectangle(Point leftTop, int width, int height, Color color, int hits)
         {
@@ -26,12 +27,25 @@ namespace RectSlayer
 
         public void Draw(Graphics g)
         {
-            Brush brush = new SolidBrush(CurrentColor);
+            Brush brush = new SolidBrush(CalculateColor());
             Brush lvlBrush = new SolidBrush(Color.White);
             g.FillRectangle(brush, LeftTopPoint.X, LeftTopPoint.Y, Width, Height);
             g.DrawString(HitsRemaining.ToString(), new Font("Arial", 10), lvlBrush, LeftTopPoint.X + 10, LeftTopPoint.Y + 5);
             brush.Dispose();
             lvlBrush.Dispose();
+        }
+
+        private Color CalculateColor()
+        {
+            // FROM: (193, 91, 91)
+            // TO:   (133, 193, 91)
+            int hits = HitsRemaining;
+            if (hits > maxColorHits) hits = maxColorHits;
+            float ratio = (float)((float)hits / (float)maxColorHits);
+            float red = 255 - (ratio * 193);
+            float green = 0;
+            int blue = 93;
+            return Color.FromArgb((int)red, (int)green, blue);
         }
     }
 }

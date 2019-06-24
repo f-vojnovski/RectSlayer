@@ -66,7 +66,7 @@
             // 
             // gameStuckTimer
             // 
-            this.gameStuckTimer.Interval = 860;
+            this.gameStuckTimer.Interval = 1500;
             this.gameStuckTimer.Tick += new System.EventHandler(this.GameStuckTimer_Tick);
             // 
             // Form1

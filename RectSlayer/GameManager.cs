@@ -51,9 +51,11 @@ namespace RectSlayer
 
         private static readonly float shootAngleLimitation = 0.066f;
 
-        private static readonly float minAllowedVerticalVelocity = 1f;
-        private static readonly int ticksAllowedBeforeGameIsStuck = 13;
+        private static readonly float minAllowedVerticalVelocity = 1.3f;
+        private static readonly int ticksAllowedBeforeGameIsStuck = 10;
         private int ticksBeforeGameIsStuck = 0;
+
+        private BallColorFactory bcFactory;
 
         public GameManager(int left, int top, int width, int height, Timer shootTimer, Timer gameStuckTimer)
         {
@@ -68,6 +70,7 @@ namespace RectSlayer
             canStartLevelIndicator = false;
             movedShooter = false;
             powerUpFactory = new PowerUpsFactory();
+            bcFactory = new BallColorFactory();
             StartGame();
         }
 
@@ -350,7 +353,8 @@ namespace RectSlayer
 
         public void ShootBall()
         {
-            Ball b = Player.ShootBall(Color.Red);
+            int clrRand = random.Next(0, 60);
+            Ball b = Player.ShootBall(bcFactory.GenerateColor(clrRand));
             if (b != null)
                 Balls.Add(b);
             if (Player.BallsShot == Player.BallsToShoot)

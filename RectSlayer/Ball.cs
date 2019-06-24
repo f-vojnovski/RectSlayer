@@ -15,7 +15,7 @@ namespace RectSlayer
 
         public static readonly float VELOCITY = 4.4f;
 
-        public static readonly float collisionMoveFactor = 2.3f;
+        public static readonly float collisionMoveFactor = 1.9f;
 
         public float VelocityX { get; set; }
 
@@ -92,12 +92,15 @@ namespace RectSlayer
 
             float xMoveFactor = 0f, yMoveFactor = 0f;
 
+            bool leftCornerTest = false;
+            bool topCornerTest = false;
 
             if (cx < rx)
             {
                 testX = rx;
                 xMoveFactor = -VelocityX * collisionMoveFactor;
                 changeHorizontalVelocity = true;
+                leftCornerTest = true;
             }
             else if (cx > rx + rw)
             {
@@ -111,6 +114,7 @@ namespace RectSlayer
                 yMoveFactor = -VelocityY * collisionMoveFactor;
                 testY = ry;
                 changeVerticalVelocity = true;
+                topCornerTest = true;
 
             }
             else if (cy > ry + rh)
@@ -124,7 +128,7 @@ namespace RectSlayer
             float distY = cy - testY;
             float distance = (float)Math.Sqrt((distX * distX) + (distY * distY));
 
-            if (distance <= RADIUS + 1)
+            if (distance <= RADIUS )
             {
 
                 if (changeVerticalVelocity && !changeHorizontalVelocity)
@@ -145,8 +149,21 @@ namespace RectSlayer
                     float x = xPos;
                     float y = yPos;
                     float c = -2 * (VelocityX * x + VelocityY * y) / (x * x + y * y);
-                    VelocityX = VelocityX + c * xPos;
-                    VelocityY = VelocityY + c * yPos;
+                    if (leftCornerTest)
+                    {
+                        VelocityX = -Math.Abs(VelocityX + c * xPos);
+                    } else
+                    {
+                        VelocityX = Math.Abs(VelocityX + c * xPos);
+                    }
+                    if (topCornerTest)
+                    {
+                        VelocityY = -Math.Abs(VelocityY + c * yPos);
+                    }
+                    else
+                    {
+                        VelocityY = Math.Abs(VelocityY + c * yPos);
+                    }
                 }
 
 

@@ -34,7 +34,7 @@ namespace RectSlayer
             topY = 100;
             width = this.Width - 40;
             height = this.Height - (int)(2.1 * topY);
-            Manager = new GameManager(leftX, topY, width, height, shootTimer);
+            Manager = new GameManager(leftX, topY, width, height, shootTimer, gameStuckTimer);
             gameLoopTimer.Start();
         }
 
@@ -87,6 +87,11 @@ namespace RectSlayer
         private void ShootTimer_Tick(object sender, EventArgs e)
         {
             Manager.ShootBall();
+        }
+
+        private void GameStuckTimer_Tick(object sender, EventArgs e)
+        {
+            Manager.CheckForStuckBalls();
         }
     }
 }

@@ -35,6 +35,7 @@ namespace RectSlayer
         private static Random random = new Random(DateTime.Now.Millisecond);
 
         private Timer shootTimer;
+        private Timer gameStuckTimer;
         bool canStartLevel;
         bool canStartLevelIndicator;
 
@@ -48,15 +49,20 @@ namespace RectSlayer
 
         public bool isGameOver { get; set; }
 
-        private static readonly float shootAngleLimitation = 0.08f;
+        private static readonly float shootAngleLimitation = 0.066f;
 
-        public GameManager(int left, int top, int width, int height, Timer shootTimer)
+        private static readonly float minAllowedVerticalVelocity = 1f;
+        private static readonly int ticksAllowedBeforeGameIsStuck = 13;
+        private int ticksBeforeGameIsStuck = 0;
+
+        public GameManager(int left, int top, int width, int height, Timer shootTimer, Timer gameStuckTimer)
         {
             this.left = left;
             this.top = top;
             this.width = width;
             this.height = height;
             this.shootTimer = shootTimer;
+            this.gameStuckTimer = gameStuckTimer;
             rectWidth = width / 6 - 2;
             canStartLevel = false;
             canStartLevelIndicator = false;
@@ -208,6 +214,7 @@ namespace RectSlayer
 
         private void IncreaseLevel()
         {
+            gameStuckTimer.Stop();
             movedShooter = false;
             if (!canStartLevel) return;
             canStartLevel = false;
@@ -329,12 +336,12 @@ namespace RectSlayer
 
             if (alphaRadians < -Math.PI + shootAngleLimitation) return;
 
-            Console.WriteLine(alphaRadians);
-
 
             Player.CanShoot = false;
 
             shootTimer.Start();
+            gameStuckTimer.Start();
+            ticksBeforeGameIsStuck = 0;
 
 
             Player.xBallVelocity = (float)Math.Cos(alphaRadians) * Ball.VELOCITY;
@@ -382,10 +389,10 @@ namespace RectSlayer
             positions.Remove(rnd);
             PowerUps.Add(powerUpFactory.GeneratePowerUp(new Point(startingPoint + rnd * step + extraStep, height), 10)); //plus powerUp
 
-            foreach(int pos in positions)
+            foreach (int pos in positions)
             {
                 rnd = random.Next(11);
-                
+
                 if (rnd < 7)
                 {
                     Point point = new Point(startingPoint + pos * step, height);
@@ -397,6 +404,23 @@ namespace RectSlayer
                     PowerUps.Add(powerUpFactory.GeneratePowerUp(point, random.Next(10)));
                 }
                 //else -> empty position
+            }
+        }
+
+        public void CheckForStuckBalls()
+        {
+            ticksBeforeGameIsStuck++;
+            if (ticksBeforeGameIsStuck < ticksAllowedBeforeGameIsStuck) return;
+            foreach (Ball ball in Balls)
+            {
+                if (Math.Abs(ball.VelocityY) < minAllowedVerticalVelocity)
+                {
+                    Point nextBallPosition = new Point(
+                        ball.Center.X + (int)ball.VelocityX - Ball.RADIUS, 
+                        ball.Center.Y + (int)ball.VelocityY - Ball.RADIUS);
+                    PowerUps.Add(new RandomDirectionPowerUp(nextBallPosition, Resources.random));
+                    break;
+                }
             }
         }
     }

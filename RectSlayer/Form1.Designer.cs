@@ -33,6 +33,7 @@
             this.shootTimer = new System.Windows.Forms.Timer(this.components);
             this.lblLevel = new System.Windows.Forms.Label();
             this.lblBalls = new System.Windows.Forms.Label();
+            this.gameStuckTimer = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // gameLoopTimer
@@ -63,6 +64,11 @@
             this.lblBalls.TabIndex = 1;
             this.lblBalls.Text = "Balls";
             // 
+            // gameStuckTimer
+            // 
+            this.gameStuckTimer.Interval = 860;
+            this.gameStuckTimer.Tick += new System.EventHandler(this.GameStuckTimer_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -87,6 +93,7 @@
         private System.Windows.Forms.Timer shootTimer;
         private System.Windows.Forms.Label lblLevel;
         private System.Windows.Forms.Label lblBalls;
+        private System.Windows.Forms.Timer gameStuckTimer;
     }
 }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RectSlayer.Properties;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace RectSlayer
     {
         public Point Position { get; set; }
 
+        public Image ShooterImage { get; set; }
         public int BallsToShoot { get; set; }
 
         public int BallsShot { get; set; }
@@ -27,6 +29,7 @@ namespace RectSlayer
             this.CanShoot = true;
             xBallVelocity = 0;
             yBallVelocity = 0;
+            ShooterImage = Resources.shooter;
         }
 
         // a ball hit the + power up

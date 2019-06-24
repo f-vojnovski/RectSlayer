@@ -27,8 +27,8 @@ namespace RectSlayer
         public int height { get; set; }
 
         public int Level { get; set; }
-        private int rectWidth = 40;
-        private int rectHeight = 40;
+        private int rectWidth;
+        private int rectHeight;
 
         private static readonly int objectsToGenerate = 6;
         private PowerUpsFactory powerUpFactory;
@@ -51,8 +51,8 @@ namespace RectSlayer
 
         private static readonly float shootAngleLimitation = 0.066f;
 
-        private static readonly float minAllowedVerticalVelocity = 1.3f;
-        private static readonly int ticksAllowedBeforeGameIsStuck = 10;
+        private static readonly float minAllowedVerticalVelocity = 0.3f;
+        private static int ticksAllowedBeforeGameIsStuck = 10;
         private int ticksBeforeGameIsStuck = 0;
 
         private BallColorFactory bcFactory;
@@ -66,9 +66,9 @@ namespace RectSlayer
             this.shootTimer = shootTimer;
             this.gameStuckTimer = gameStuckTimer;
             rectWidth = width / 6 - 2;
-            canStartLevel = false;
-            canStartLevelIndicator = false;
+            rectHeight = 40;
             movedShooter = false;
+            ticksAllowedBeforeGameIsStuck = 10;
             powerUpFactory = new PowerUpsFactory();
             bcFactory = new BallColorFactory();
             StartGame();
@@ -82,6 +82,8 @@ namespace RectSlayer
             Rectangles = new List<Rectangle>();
             PowerUps = new List<PowerUp>();
             GenerateObjects();
+            canStartLevel = false;
+            canStartLevelIndicator = false;
             Player.CanShoot = true;
             isGameOver = false;
         }
@@ -96,12 +98,12 @@ namespace RectSlayer
             return bmp;
         }
         */
-
+/*
         public void GameOver()
         {
             isGameOver = true;
         }
-
+*/
         public void HandleLogic()
         {
             foreach (PowerUp powerUp in PowerUps)
@@ -222,6 +224,12 @@ namespace RectSlayer
             if (!canStartLevel) return;
             canStartLevel = false;
             ++Level;
+
+            if(Level % 7 == 0)
+            {
+                ticksAllowedBeforeGameIsStuck += 1;
+            }
+
             MoveRectangles();
             MovePowerUps();
             GenerateObjects();
@@ -243,7 +251,7 @@ namespace RectSlayer
 
             if (GameOverCheck())
             {
-                GameOver();
+                isGameOver = true;
             }
         }
 
@@ -306,21 +314,37 @@ namespace RectSlayer
             }
             brush.Dispose();
         }
+        
+        private float CalculateAngle(Point mouseLocation)
+        {
+            int dx = mouseLocation.X - Player.Position.X;
+            int dy = mouseLocation.Y - Player.Position.Y;
+            float alphaRadians = (float)Math.Atan2(dy, dx);
+
+            if (alphaRadians > -shootAngleLimitation) return -1;
+
+            if (alphaRadians < -Math.PI + shootAngleLimitation) return -1;
+
+            return alphaRadians;
+        }
 
         public void DrawIndicatorLine(Graphics g, Point mouseLocation)
         {
+            float alphaRadians = CalculateAngle(mouseLocation);
+
+            if (alphaRadians == -1)
+                return;
+
             int mouseX = mouseLocation.X;
             int mouseY = mouseLocation.Y;
+
+            if (mouseLocation.Y < top)
+                mouseY = top;
 
             if (mouseLocation.X > left + width)
                 mouseX = left + width;
             else if (mouseLocation.X < left)
                 mouseX = left;
-
-            if (mouseLocation.Y > top + height)
-                mouseY = top + height;
-            else if (mouseLocation.Y < top)
-                mouseY = top;
 
             Point newMouseLocation = new Point(mouseX, mouseY);
 
@@ -331,14 +355,10 @@ namespace RectSlayer
         {
             if (!Player.CanShoot) return;
 
-            int dx = mouseLocation.X - Player.Position.X;
-            int dy = mouseLocation.Y - Player.Position.Y;
-            float alphaRadians = (float)Math.Atan2(dy, dx);
+            float alphaRadians = CalculateAngle(mouseLocation);
 
-            if (alphaRadians > - shootAngleLimitation) return;
-
-            if (alphaRadians < -Math.PI + shootAngleLimitation) return;
-
+            if (alphaRadians == -1)
+                return;
 
             Player.CanShoot = false;
 
@@ -414,7 +434,11 @@ namespace RectSlayer
         public void CheckForStuckBalls()
         {
             ticksBeforeGameIsStuck++;
+
             if (ticksBeforeGameIsStuck < ticksAllowedBeforeGameIsStuck) return;
+
+            ticksBeforeGameIsStuck = 0;
+
             foreach (Ball ball in Balls)
             {
                 if (Math.Abs(ball.VelocityY) < minAllowedVerticalVelocity)

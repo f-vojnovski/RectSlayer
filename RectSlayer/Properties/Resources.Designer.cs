@@ -93,6 +93,16 @@ namespace RectSlayer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap shooter {
+            get {
+                object obj = ResourceManager.GetObject("shooter", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap vertical {
             get {
                 object obj = ResourceManager.GetObject("vertical", resourceCulture);

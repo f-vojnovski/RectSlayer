@@ -24,6 +24,7 @@ namespace RectSlayer
         {
             InitializeComponent();
             this.DoubleBuffered = true;
+            MaximizeBox = false;
             SetupVariables();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;

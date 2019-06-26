@@ -49,18 +49,20 @@
             // lblLevel
             // 
             this.lblLevel.AutoSize = true;
-            this.lblLevel.Location = new System.Drawing.Point(13, 13);
+            this.lblLevel.Location = new System.Drawing.Point(17, 16);
+            this.lblLevel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblLevel.Name = "lblLevel";
-            this.lblLevel.Size = new System.Drawing.Size(35, 13);
+            this.lblLevel.Size = new System.Drawing.Size(46, 17);
             this.lblLevel.TabIndex = 0;
             this.lblLevel.Text = "label1";
             // 
             // lblBalls
             // 
             this.lblBalls.AutoSize = true;
-            this.lblBalls.Location = new System.Drawing.Point(12, 538);
+            this.lblBalls.Location = new System.Drawing.Point(16, 662);
+            this.lblBalls.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblBalls.Name = "lblBalls";
-            this.lblBalls.Size = new System.Drawing.Size(29, 13);
+            this.lblBalls.Size = new System.Drawing.Size(38, 17);
             this.lblBalls.TabIndex = 1;
             this.lblBalls.Text = "Balls";
             // 
@@ -71,14 +73,14 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(509, 560);
+            this.ClientSize = new System.Drawing.Size(679, 689);
             this.Controls.Add(this.lblBalls);
             this.Controls.Add(this.lblLevel);
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "RectSlayer";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseClick);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseMove);

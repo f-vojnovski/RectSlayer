@@ -13,6 +13,7 @@ namespace RectSlayer
         public Point Position { get; set; }
 
         public Image ShooterImage { get; set; }
+
         public int BallsToShoot { get; set; }
 
         public int BallsShot { get; set; }
@@ -21,6 +22,7 @@ namespace RectSlayer
 
         public float xBallVelocity { get; set; }
         public float yBallVelocity { get; set; }
+
         public Shooter(Point position)
         {
             this.Position = position;
@@ -32,8 +34,8 @@ namespace RectSlayer
             ShooterImage = Resources.shooter;
         }
 
-        // a ball hit the + power up
-        public void IncreaseCBalls()
+        // When a ball hits the + power up.
+        public void IncreaseBallsToShoot()
         {
             ++BallsToShoot;
         }
@@ -41,36 +43,38 @@ namespace RectSlayer
         public Ball ShootBall(Color color)
         {
             ++BallsShot;
-            Point testP = new Point(Position.X, Position.Y);
-            return new Ball(testP, xBallVelocity, yBallVelocity, color);
-
+            Point position = new Point(Position.X, Position.Y);
+            return new Ball(position, xBallVelocity, yBallVelocity, color);
         }
 
-        // move to the position of the first dead ball
-        // managed by GameManager?
+        // Move to the position of the first dead ball.
         public void Relocate(Point position)
         {
             this.Position = position;
         }
 
-        // TODO: Add other necessary methods
-
         public void Draw(Graphics g)
         {
+            /*
             Brush brush = new SolidBrush(Color.Purple);
             g.FillRectangle(brush, Position.X,Position.Y, 30, 30);
+            brush.Dispose();
+            */
+
+            g.DrawImage(ShooterImage,Position);
+            
         }
+
+        // Draw the indicator line.
         public void DrawLine(Graphics g, Point mouseLocation)
         {
             if (!CanShoot)
-            {
                 return;
-            }
+
             if (mouseLocation == Point.Empty)
-            {
                 return;
-            }
-            Pen pen = new Pen(Color.White, 2);
+
+            Pen pen = new Pen(Color.White, 3);
             pen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
 
             g.DrawLine(pen, Position, mouseLocation);

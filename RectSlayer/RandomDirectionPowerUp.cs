@@ -16,6 +16,7 @@ namespace RectSlayer
 
         }
 
+        // Give the ball a random direction.
         public void RandomDirection(Ball ball)
         {
             double angle = random.NextDouble() * 2 * Math.PI;

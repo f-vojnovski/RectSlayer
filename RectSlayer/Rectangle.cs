@@ -35,6 +35,7 @@ namespace RectSlayer
             lvlBrush.Dispose();
         }
 
+        // Calculates the color based on hits remaining.
         private Color CalculateColor()
         {
             // FROM: (193, 91, 91)

@@ -10,6 +10,8 @@ namespace RectSlayer
 {
     public class PowerUpsFactory
     {
+
+        // Method used to generate a random powerUp
         public PowerUp GeneratePowerUp(Point position, int type)
         {
             if (type < 4)

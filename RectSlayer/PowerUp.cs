@@ -9,6 +9,7 @@ namespace RectSlayer
 {
     public class PowerUp
     {
+        public Image PowerUpImage { get; set; }
         public Point LeftTopPoint { get; set; }
 
         public List<Ball> BallsInside { get; set; }
@@ -16,8 +17,6 @@ namespace RectSlayer
         protected float centerX;
         protected float centerY;
 
-
-        public Image PowerUpImage { get; set; }
 
         public bool IsUsed { get; set; }
 
@@ -33,6 +32,7 @@ namespace RectSlayer
             BallsInside = new List<Ball>();
         }
 
+        // Needed for collision check.
         public void CalculateCenter()
         {
             this.centerX = LeftTopPoint.X + PowerUpImage.Width / 2f;
@@ -44,6 +44,7 @@ namespace RectSlayer
             g.DrawImage(PowerUpImage, LeftTopPoint);
         }
 
+        // Check if a ball touches with the powerUp.
         public bool CheckCollision(Ball ball)
         {
             double ballX = ball.Center.X - Ball.RADIUS;
@@ -54,23 +55,25 @@ namespace RectSlayer
             return d <= radius * radius;
         }
 
+
+        // Called only if a ball is touching with the powerUp.
+        // If the ball is in the list then the ball has already activated the powerUp.
+        // If the ball is not in the list, the powerUp will be activated and the ball added in the list.
         public bool ActivatePowerUp(Ball ball)
         {
             if(BallsInside.Contains(ball))
-            {
                 return false;
-            }
+
 
             IsUsed = true;
-
             BallsInside.Add(ball);
 
-            FilterBalls(); //remove balls that are no longer touching the powerup
+            FilterBalls(); 
 
             return true;
-
         }
 
+        // Remove balls that are no longer touching the powerup.
         public void FilterBalls()
         {
             for(int i=BallsInside.Count-1; i>=0; --i)

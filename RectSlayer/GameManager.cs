@@ -1,5 +1,3 @@
-
-
 ﻿using RectSlayer.Properties;
 using System;
 using System.Collections.Generic;
@@ -28,20 +26,21 @@ namespace RectSlayer
 
         public int Level { get; set; }
         private int rectWidth;
-        private int rectHeight;
+        private int objectHeight;
 
         private static readonly int objectsToGenerate = 6;
-        private PowerUpsFactory powerUpFactory;
+        private static PowerUpsFactory powerUpFactory;
         private static Random random = new Random(DateTime.Now.Millisecond);
 
         private Timer shootTimer;
         private Timer gameStuckTimer;
-        bool canStartLevel;
-        bool canStartLevelIndicator;
 
-        bool movedShooter;
+        private bool canStartLevel;
+        private bool canStartLevelIndicator;
 
-        Point newPlayerPosition;
+        private bool movedShooter;
+
+        private Point newPlayerPosition;
 
         private static readonly int PlayerClampDistance = 3;
 
@@ -53,7 +52,7 @@ namespace RectSlayer
 
         private static readonly float minAllowedVerticalVelocity = 0.3f;
         private static int ticksAllowedBeforeGameIsStuck = 10;
-        private int ticksBeforeGameIsStuck = 0;
+        private int currentTicks = 0;
 
         private BallColorFactory bcFactory;
 
@@ -65,8 +64,8 @@ namespace RectSlayer
             this.height = height;
             this.shootTimer = shootTimer;
             this.gameStuckTimer = gameStuckTimer;
-            rectWidth = width / 6 - 2;
-            rectHeight = 40;
+            rectWidth = (width / 6) - 2;
+            objectHeight = 40;
             movedShooter = false;
             ticksAllowedBeforeGameIsStuck = 10;
             powerUpFactory = new PowerUpsFactory();
@@ -88,22 +87,63 @@ namespace RectSlayer
             isGameOver = false;
         }
 
-        /*
-        private Image getImage(string v)
+        // Calculates the angle between a clicked position and the position of the player.
+        private float CalculateAngle(Point mouseLocation)
         {
-            Assembly myAssembly = Assembly.GetExecutingAssembly();
-            Stream myStream = myAssembly.GetManifestResourceStream("RectSlayer.Resources."+v);
-            Bitmap bmp = new Bitmap(myStream);
+            int dx = mouseLocation.X - Player.Position.X;
+            int dy = mouseLocation.Y - Player.Position.Y;
+            float alphaRadians = (float)Math.Atan2(dy, dx);
 
-            return bmp;
+            if (alphaRadians > -shootAngleLimitation)
+                return -1;
+
+            if (alphaRadians < -Math.PI + shootAngleLimitation)
+                return -1;
+
+            return alphaRadians;
         }
-        */
-/*
-        public void GameOver()
+
+        // Calculates the shooting angle and starts the shooting timer.
+        // Shooting is not allowed if the player tries to shoot down(or not too high).
+        public void StartShooting(Point mouseLocation)
         {
-            isGameOver = true;
+            if (!Player.CanShoot)
+                return;
+
+            float alphaRadians = CalculateAngle(mouseLocation);
+
+            if (alphaRadians == -1)
+                return;
+
+            Player.CanShoot = false;
+
+            shootTimer.Start();
+            gameStuckTimer.Start();
+            currentTicks = 0;
+
+
+            Player.xBallVelocity = (float)Math.Cos(alphaRadians) * Ball.VELOCITY;
+            Player.yBallVelocity = (float)Math.Sin(alphaRadians) * Ball.VELOCITY;
         }
-*/
+
+        // Called by the shootTimer tick method.
+        // Shoots one ball on every tick, when the last ball is shot it stops the shootTimer.
+        public void ShootBall()
+        {
+            int clrRand = random.Next(0, 60);
+            Ball b = Player.ShootBall(bcFactory.GenerateColor(clrRand));
+            if (b != null)
+                Balls.Add(b);
+            if (Player.BallsShot == Player.BallsToShoot)
+            {
+                Player.BallsShot = 0;
+                Player.CanShoot = false;
+                canStartLevelIndicator = true;
+                shootTimer.Stop();
+            }
+        }
+
+        // Handles ball movement, collision checking, level ending, etc.
         public void HandleLogic()
         {
             foreach (PowerUp powerUp in PowerUps)
@@ -133,32 +173,7 @@ namespace RectSlayer
             }
         }
 
-        private void CheckDeadBalls()
-        {
-            for (int i = Balls.Count - 1; i >= 0; i--)
-            {
-                if (Balls.ElementAt(i).IsDead)
-                {
-                    if (!movedShooter)
-                    {
-                        int xNewPos = Balls.ElementAt(i).Center.X;
-                        if (xNewPos < left + PlayerClampDistance)
-                        {
-                            xNewPos = left + PlayerClampDistance;
-                        }
-                        // 30 is player width, it is hard coded for now
-                        else if (xNewPos > left + width - PlayerClampDistance - 30)
-                        {
-                            xNewPos = left + width - PlayerClampDistance - 30;
-                        }
-                        newPlayerPosition = new Point(xNewPos, Player.Position.Y);
-                        movedShooter = !movedShooter;
-                    }
-                    Balls.RemoveAt(i);
-                }
-            }
-        }
-
+        // Checks for ball-rectangles collision and removes dead rectangles.
         private void CheckRectangleCollision(Ball ball)
         {
             for (int i = Rectangles.Count - 1; i >= 0; --i)
@@ -174,9 +189,10 @@ namespace RectSlayer
             }
         }
 
+        //Checks for powerUp collision and activates the powerUps.
         private void CheckPowerUpCollision(Ball ball)
         {
-            for (int i = PowerUps.Count - 1; i >= 0; i--)
+            for (int i = PowerUps.Count - 1; i >= 0; --i)
             {
                 var powerUp = PowerUps.ElementAt(i);
                 if (powerUp.CheckCollision(ball))
@@ -185,7 +201,7 @@ namespace RectSlayer
                     {
                         if (powerUp.GetType() == typeof(PlusPowerUp))
                         {
-                            Player.IncreaseCBalls();
+                            Player.IncreaseBallsToShoot();
                             PowerUps.RemoveAt(i);
                         }
 
@@ -200,7 +216,6 @@ namespace RectSlayer
                             ((HorizontalHitPowerUp)powerUp).Hit(Rectangles);
                         }
                         
-
                         if (powerUp.GetType() == typeof(VerticalHitPowerUp))
                         {
                             powerUp.IsActive = true;
@@ -217,18 +232,71 @@ namespace RectSlayer
             }
         }
 
+        // Checks for dead balls and removes them.
+        // Gets the new position of the shooter from the first dead ball.
+        private void CheckDeadBalls()
+        {
+            for (int i = Balls.Count - 1; i >= 0; --i)
+            {
+                if (Balls.ElementAt(i).IsDead)
+                {
+                    if (!movedShooter)
+                    {
+                        int xNewPos = Balls.ElementAt(i).Center.X;
+                        if (xNewPos < left + PlayerClampDistance)
+                        {
+                            xNewPos = left + PlayerClampDistance;
+                        }
+                        else if (xNewPos > left + width - PlayerClampDistance - Player.ShooterImage.Width)
+                        {
+                            xNewPos = left + width - PlayerClampDistance - Player.ShooterImage.Width;
+                        }
+                        newPlayerPosition = new Point(xNewPos, Player.Position.Y);
+                        movedShooter = !movedShooter;
+                    }
+                    Balls.RemoveAt(i);
+                }
+            }
+        }
+
+        // If a ball has too low vertical velocity, it generates a powerUp that moves
+        // the ball in a random direction to unstuck the ball.
+        public void CheckForStuckBalls()
+        {
+            currentTicks++;
+
+            if (currentTicks < ticksAllowedBeforeGameIsStuck)
+                return;
+
+            currentTicks -= 5;
+
+            foreach (Ball ball in Balls)
+            {
+                if (Math.Abs(ball.VelocityY) < minAllowedVerticalVelocity)
+                {
+                    Point nextBallPosition = new Point(
+                        ball.Center.X + (int)ball.VelocityX - Ball.RADIUS,
+                        ball.Center.Y + (int)ball.VelocityY - Ball.RADIUS);
+
+                    PowerUps.Add(new RandomDirectionPowerUp(nextBallPosition, Resources.random));
+                    break;
+                }
+            }
+        }
+
+        // Handles level change.
         private void IncreaseLevel()
         {
+            if (!canStartLevel)
+                return;
+
             gameStuckTimer.Stop();
             movedShooter = false;
-            if (!canStartLevel) return;
             canStartLevel = false;
             ++Level;
 
-            if(Level % 7 == 0)
-            {
-                ticksAllowedBeforeGameIsStuck += 1;
-            }
+            if (Level % 10 == 0)
+                ++ticksAllowedBeforeGameIsStuck;
 
             MoveRectangles();
             MovePowerUps();
@@ -239,25 +307,25 @@ namespace RectSlayer
                 Player.Relocate(newPlayerPosition);
             }
 
-            canStartLevel = false;
-
-            for (int i = PowerUps.Count - 1; i >= 0; --i)
-            {
-                if (PowerUps.ElementAt(i).LeftTopPoint.Y > yGameOverCheck)
-                {
-                    PowerUps.RemoveAt(i);
-                }
-            }
-
             if (GameOverCheck())
             {
                 isGameOver = true;
             }
         }
 
+        // Moves the rectangles.
+        private void MoveRectangles()
+        {
+            foreach (Rectangle rect in Rectangles)
+            {
+                rect.LeftTopPoint = new Point(rect.LeftTopPoint.X, rect.LeftTopPoint.Y + objectHeight + 2);
+            }
+        }
+
+        // Moves the powerUps and removes powerUps that are used or in the bottom row.
         private void MovePowerUps()
         {
-            for(int i=PowerUps.Count - 1; i >= 0; i--)
+            for(int i=PowerUps.Count - 1; i >= 0; --i)
             {
                 var powerUp = PowerUps.ElementAt(i);
                 if(powerUp.IsUsed)
@@ -266,20 +334,69 @@ namespace RectSlayer
                 }
                 else
                 {
-                    powerUp.LeftTopPoint = new Point(powerUp.LeftTopPoint.X, powerUp.LeftTopPoint.Y + rectHeight + 2);
+                    powerUp.LeftTopPoint = new Point(powerUp.LeftTopPoint.X, powerUp.LeftTopPoint.Y + objectHeight + 2);
                     powerUp.CalculateCenter();
+
+                    if (powerUp.LeftTopPoint.Y > yGameOverCheck)
+                    {
+                        PowerUps.RemoveAt(i);
+                    }
                 }
             }
         }
 
-        private void MoveRectangles()
+        // Randomly generates rectangles and powerUps on every level.
+        // First it chooses a position for the plus powerUp, then 
+        // for the remaining positions randomly chooses if it will be a rectangle or powerUp or empty space.
+        // High probability for a rectangle, low probability for a powerUp or empty space.
+        public void GenerateObjects()
         {
-            foreach(Rectangle rect in Rectangles)
+            int height = top + objectHeight + 3;
+            int step = 80;
+            int extraStep = step / 5;
+            int startingPoint = left + 6;
+            List<int> positions = new List<int>();
+
+            for (int i = 0; i < objectsToGenerate; i++)
+                positions.Add(i);
+
+            // plus powerUp - generate position
+            int rnd = random.Next(objectsToGenerate);
+            positions.Remove(rnd);
+            PowerUps.Add(powerUpFactory.GeneratePowerUp(new Point(startingPoint + rnd * step + extraStep, height), 10)); //plus powerUp
+
+            foreach (int pos in positions)
             {
-                rect.LeftTopPoint = new Point(rect.LeftTopPoint.X, rect.LeftTopPoint.Y + rectHeight+2);
+                rnd = random.Next(11);
+
+                if (rnd < 7)
+                {
+                    Point point = new Point(startingPoint + pos * step, height);
+                    Rectangles.Add(new Rectangle(point, rectWidth, objectHeight, Color.Blue, Level));
+                }
+                else if (rnd < 9)
+                {
+                    Point point = new Point(startingPoint + pos * step + extraStep, height);
+                    PowerUps.Add(powerUpFactory.GeneratePowerUp(point, random.Next(10)));
+                }
+                //else -> empty position
             }
         }
 
+        // Checks if any rectangle is in the bottom row.
+        public bool GameOverCheck()
+        {
+            foreach (Rectangle rect in Rectangles)
+            {
+                if (rect.LeftTopPoint.Y > yGameOverCheck)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Draws the game.
         public void Draw(Graphics g)
         {
             foreach (Ball ball in Balls)
@@ -301,6 +418,8 @@ namespace RectSlayer
             Player.Draw(g);
         }
 
+
+        // Helper method, called when horizontal/vertical hit powerups are used.
         private void DrawActivePowerUp(Graphics g, PowerUp powerUp)
         {
             Brush brush = new SolidBrush(Color.White);
@@ -315,19 +434,7 @@ namespace RectSlayer
             brush.Dispose();
         }
         
-        private float CalculateAngle(Point mouseLocation)
-        {
-            int dx = mouseLocation.X - Player.Position.X;
-            int dy = mouseLocation.Y - Player.Position.Y;
-            float alphaRadians = (float)Math.Atan2(dy, dx);
-
-            if (alphaRadians > -shootAngleLimitation) return -1;
-
-            if (alphaRadians < -Math.PI + shootAngleLimitation) return -1;
-
-            return alphaRadians;
-        }
-
+        // Draws the indicator line when the player can shoot.
         public void DrawIndicatorLine(Graphics g, Point mouseLocation)
         {
             float alphaRadians = CalculateAngle(mouseLocation);
@@ -351,105 +458,5 @@ namespace RectSlayer
             Player.DrawLine(g, newMouseLocation);
         }
 
-        public void StartShooting(Point mouseLocation)
-        {
-            if (!Player.CanShoot) return;
-
-            float alphaRadians = CalculateAngle(mouseLocation);
-
-            if (alphaRadians == -1)
-                return;
-
-            Player.CanShoot = false;
-
-            shootTimer.Start();
-            gameStuckTimer.Start();
-            ticksBeforeGameIsStuck = 0;
-
-
-            Player.xBallVelocity = (float)Math.Cos(alphaRadians) * Ball.VELOCITY;
-            Player.yBallVelocity = (float)Math.Sin(alphaRadians) * Ball.VELOCITY;
-        }
-
-        public void ShootBall()
-        {
-            int clrRand = random.Next(0, 60);
-            Ball b = Player.ShootBall(bcFactory.GenerateColor(clrRand));
-            if (b != null)
-                Balls.Add(b);
-            if (Player.BallsShot == Player.BallsToShoot)
-            {
-                Player.BallsShot = 0;
-                Player.CanShoot = false;
-                canStartLevelIndicator = true;
-                shootTimer.Stop();
-            }
-        }
-
-        public bool GameOverCheck()
-        {
-            foreach(Rectangle rect in Rectangles)
-            {
-                if (rect.LeftTopPoint.Y > yGameOverCheck)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-        public void GenerateObjects()
-        {
-            int height = top + rectHeight + 3;
-            int step = 80;
-            int extraStep = step / 5;
-            int startingPoint = left + 6;
-            List<int> positions = new List<int>();
-
-            for (int i = 0; i < objectsToGenerate; i++)
-                positions.Add(i);
-
-            //plus powerUp - generate position
-            int rnd = random.Next(objectsToGenerate);
-            positions.Remove(rnd);
-            PowerUps.Add(powerUpFactory.GeneratePowerUp(new Point(startingPoint + rnd * step + extraStep, height), 10)); //plus powerUp
-
-            foreach (int pos in positions)
-            {
-                rnd = random.Next(11);
-
-                if (rnd < 7)
-                {
-                    Point point = new Point(startingPoint + pos * step, height);
-                    Rectangles.Add(new Rectangle(point, rectWidth, rectHeight, Color.Blue, Level));
-                }
-                else if (rnd < 9)
-                {
-                    Point point = new Point(startingPoint + pos * step + extraStep, height);
-                    PowerUps.Add(powerUpFactory.GeneratePowerUp(point, random.Next(10)));
-                }
-                //else -> empty position
-            }
-        }
-
-        public void CheckForStuckBalls()
-        {
-            ticksBeforeGameIsStuck++;
-
-            if (ticksBeforeGameIsStuck < ticksAllowedBeforeGameIsStuck) return;
-
-            ticksBeforeGameIsStuck = 0;
-
-            foreach (Ball ball in Balls)
-            {
-                if (Math.Abs(ball.VelocityY) < minAllowedVerticalVelocity)
-                {
-                    Point nextBallPosition = new Point(
-                        ball.Center.X + (int)ball.VelocityX - Ball.RADIUS, 
-                        ball.Center.Y + (int)ball.VelocityY - Ball.RADIUS);
-                    PowerUps.Add(new RandomDirectionPowerUp(nextBallPosition, Resources.random));
-                    break;
-                }
-            }
-        }
     }
 }

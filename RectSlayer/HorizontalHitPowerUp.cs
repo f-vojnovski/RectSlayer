@@ -14,6 +14,7 @@ namespace RectSlayer
 
         }
 
+        // Hit every rectangle that is in the same row.
         public void Hit(List<Rectangle> rectangles)
         {
             for (int i = rectangles.Count-1; i >= 0; i--)

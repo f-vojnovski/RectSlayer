@@ -45,6 +45,7 @@ namespace RectSlayer
             brush.Dispose();
         }
 
+        // Moves the ball and checks border collision
         public void Move(int left, int top, int width, int height)
         {
             float x = xPos + VelocityX;
@@ -67,25 +68,27 @@ namespace RectSlayer
 
             xPos = xPos + VelocityX;
             yPos = yPos + VelocityY;
-            int newX = (int)Math.Round((xPos));
-            int newY = (int)Math.Round((yPos));
+            int newX = (int)Math.Round(xPos);
+            int newY = (int)Math.Round(yPos);
 
             Center = new Point(newX, newY);
         }
 
+        // Complex method that checks for collision and changes the direction of the ball.
+        // A lot of maths involved.
         public bool CheckCollision(Rectangle rectangle)
         {
-            float cx = xPos;
-            float cy = yPos;
+            float ballX = xPos;
+            float ballY = yPos;
 
-            float rx = rectangle.LeftTopPoint.X;
-            float ry = rectangle.LeftTopPoint.Y;
+            float rectX = rectangle.LeftTopPoint.X;
+            float rectY = rectangle.LeftTopPoint.Y;
 
-            float rw = rectangle.Width;
-            float rh = rectangle.Height;
+            float rectWidth = rectangle.Width;
+            float rectHeight = rectangle.Height;
 
-            float testX = cx;
-            float testY = cy;
+            float testX = ballX;
+            float testY = ballY;
 
             bool changeHorizontalVelocity = false;
             bool changeVerticalVelocity = false;
@@ -95,37 +98,38 @@ namespace RectSlayer
             bool leftCornerTest = false;
             bool topCornerTest = false;
 
-            if (cx < rx)
+            if (ballX < rectX)
             {
-                testX = rx;
+                testX = rectX;
                 xMoveFactor = -VelocityX * collisionMoveFactor;
                 changeHorizontalVelocity = true;
                 leftCornerTest = true;
             }
-            else if (cx > rx + rw)
+            else if (ballX > rectX + rectWidth)
             {
                 xMoveFactor = -VelocityX * collisionMoveFactor;
-                testX = rx + rw;
+                testX = rectX + rectWidth;
                 changeHorizontalVelocity = true;
             }
 
-            if (cy < ry)
+            if (ballY < rectY)
             {
                 yMoveFactor = -VelocityY * collisionMoveFactor;
-                testY = ry;
+                testY = rectY;
                 changeVerticalVelocity = true;
                 topCornerTest = true;
 
             }
-            else if (cy > ry + rh)
+            else if (ballY > rectY + rectHeight)
             {
                 yMoveFactor = -VelocityY * collisionMoveFactor;
-                testY = ry + rh;
+                testY = rectY + rectHeight;
                 changeVerticalVelocity = true;
 
             }
-            float distX = cx - testX;
-            float distY = cy - testY;
+
+            float distX = ballX - testX;
+            float distY = ballY - testY;
             float distance = (float)Math.Sqrt((distX * distX) + (distY * distY));
 
             if (distance <= RADIUS )
@@ -149,6 +153,7 @@ namespace RectSlayer
                     float x = xPos;
                     float y = yPos;
                     float c = -2 * (VelocityX * x + VelocityY * y) / (x * x + y * y);
+
                     if (leftCornerTest)
                     {
                         VelocityX = -Math.Abs(VelocityX + c * xPos);
@@ -166,17 +171,12 @@ namespace RectSlayer
                     }
                 }
 
-
                 rectangle.HitsRemaining--;
 
                 return true;
             }
-            return false;
-        }
 
-        internal void RandomDirection()
-        {
-            throw new NotImplementedException();
+            return false;
         }
     }
 }

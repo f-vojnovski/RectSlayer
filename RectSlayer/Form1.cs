@@ -12,7 +12,7 @@ namespace RectSlayer
 {
     public partial class Form1 : Form
     {
-        private GameManager Manager;
+        internal GameManager Manager;
 
         private int leftX;
         private int topY;
@@ -24,7 +24,7 @@ namespace RectSlayer
         {
             InitializeComponent();
             this.DoubleBuffered = true;
-            MaximizeBox = false;
+            this.MaximizeBox = false;
             SetupVariables();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
@@ -43,10 +43,15 @@ namespace RectSlayer
         {
             e.Graphics.Clear(Color.Black);
             Pen pen = new Pen(Color.Yellow, 3);
+            Brush brush = new SolidBrush(Color.Aquamarine);
             e.Graphics.DrawRectangle(pen, leftX, topY, width, height);
-            pen.Dispose();
             Manager.Draw(e.Graphics);
             Manager.DrawIndicatorLine(e.Graphics, mouseLocation);
+            e.Graphics.DrawString("Level: " + Manager.Level, new Font("Arial", 40), brush, 150, 30);
+            e.Graphics.DrawString("Balls: " + Manager.Player.BallsToShoot, new Font("Arial", 15), brush, 10, topY + height + 30);
+            e.Graphics.DrawString("High Score: " + Manager.HighScore, new Font("Arial", 15), brush, width - 130, topY + height + 30);
+            pen.Dispose();
+            brush.Dispose();
         }
 
         private void GameLoopTimer_Tick(object sender, EventArgs e)
@@ -69,6 +74,7 @@ namespace RectSlayer
                 {
                     this.Hide();
                     var oForm = new MainMenu();
+                    oForm.HighScore = Manager.HighScore;
                     oForm.Closed += (s, args) => this.Close();
                     oForm.Show();
                 }

@@ -55,6 +55,7 @@
             this.lblLevel.Size = new System.Drawing.Size(46, 17);
             this.lblLevel.TabIndex = 0;
             this.lblLevel.Text = "label1";
+            this.lblLevel.Visible = false;
             // 
             // lblBalls
             // 
@@ -65,6 +66,7 @@
             this.lblBalls.Size = new System.Drawing.Size(38, 17);
             this.lblBalls.TabIndex = 1;
             this.lblBalls.Text = "Balls";
+            this.lblBalls.Visible = false;
             // 
             // gameStuckTimer
             // 

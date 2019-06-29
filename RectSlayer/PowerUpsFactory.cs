@@ -10,6 +10,29 @@ namespace RectSlayer
 {
     public class PowerUpsFactory
     {
+        // Generate powerUp by name
+        public PowerUp GeneratePowerUp(Point position, string type)
+        {
+            if (type.Equals("horizontal", StringComparison.OrdinalIgnoreCase))
+            {
+                return new HorizontalHitPowerUp(position, Resources.horizontal);
+            }
+            else if (type.Equals("vertical", StringComparison.OrdinalIgnoreCase))
+            {
+                return new VerticalHitPowerUp(position, Resources.vertical);
+            }
+            else if (type.Equals("randomdirection", StringComparison.OrdinalIgnoreCase))
+            {
+                return new RandomDirectionPowerUp(position, Resources.random);
+            }
+            else if (type.Equals("plus", StringComparison.OrdinalIgnoreCase))
+            {
+                return new PlusPowerUp(position, Resources.plus);
+            }
+
+            return null;
+        }
+
 
         // Method used to generate a random powerUp
         public PowerUp GeneratePowerUp(Point position, int type)

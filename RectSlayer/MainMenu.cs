@@ -12,8 +12,13 @@ namespace RectSlayer
 {
     public partial class MainMenu : Form
     {
+        public int HighScore { get; set; }
         public MainMenu()
         {
+            this.DoubleBuffered = true;
+            this.MaximizeBox = false;
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            HighScore = 1;
             InitializeComponent();
         }
 
@@ -23,6 +28,7 @@ namespace RectSlayer
             var gameForm = new Form1();
             gameForm.Closed += (s, args) => this.Close();
             gameForm.Show();
+            gameForm.Manager.HighScore = HighScore;
         }
 
         private void BtnQuitGame_Click(object sender, EventArgs e)

@@ -25,6 +25,8 @@ namespace RectSlayer
         public int height { get; set; }
 
         public int Level { get; set; }
+        public int HighScore { get; set; }
+
         private int rectWidth;
         private int objectHeight;
 
@@ -67,9 +69,9 @@ namespace RectSlayer
             rectWidth = (width / 6) - 2;
             objectHeight = 40;
             movedShooter = false;
-            ticksAllowedBeforeGameIsStuck = 10;
             powerUpFactory = new PowerUpsFactory();
             bcFactory = new BallColorFactory();
+            HighScore = 1;
             StartGame();
         }
 
@@ -85,6 +87,7 @@ namespace RectSlayer
             canStartLevelIndicator = false;
             Player.CanShoot = true;
             isGameOver = false;
+            ticksAllowedBeforeGameIsStuck = 10;
         }
 
         // Calculates the angle between a clicked position and the position of the player.
@@ -278,7 +281,7 @@ namespace RectSlayer
                         ball.Center.X + (int)ball.VelocityX - Ball.RADIUS,
                         ball.Center.Y + (int)ball.VelocityY - Ball.RADIUS);
 
-                    PowerUps.Add(new RandomDirectionPowerUp(nextBallPosition, Resources.random));
+                    PowerUps.Add(powerUpFactory.GeneratePowerUp(nextBallPosition, "randomdirection"));
                     break;
                 }
             }
@@ -311,6 +314,9 @@ namespace RectSlayer
             {
                 isGameOver = true;
             }
+
+            // if current level is higher than highscore -> change highscore
+            HighScore = Level > HighScore ? Level : HighScore; 
         }
 
         // Moves the rectangles.
@@ -363,7 +369,8 @@ namespace RectSlayer
             // plus powerUp - generate position
             int rnd = random.Next(objectsToGenerate);
             positions.Remove(rnd);
-            PowerUps.Add(powerUpFactory.GeneratePowerUp(new Point(startingPoint + rnd * step + extraStep, height), 10)); //plus powerUp
+            Point plusPosition = new Point(startingPoint + rnd * step + extraStep, height);
+            PowerUps.Add(powerUpFactory.GeneratePowerUp(plusPosition, "plus")); //plus powerUp
 
             foreach (int pos in positions)
             {
